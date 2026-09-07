@@ -51,6 +51,7 @@ import {
     currentChatKey: '',
     backstageOpen: false,
     suppressLauncherClick: false,
+    suppressBackstageClick: false,
     animaAdapting: false,
     animaAdaptTimer: null,
     animaAdaptStatus: '尚未检查当前角色卡',
@@ -927,6 +928,73 @@ import {
     launcher.addEventListener('pointercancel', finish);
   }
 
+  function applyBackstagePosition() {
+    const pill = document.getElementById('apb-backstage-pill');
+    if (!pill || pill.hidden) return;
+    const saved = getRootSettings().ui.backstage || {};
+    const margin = 8;
+    const width = pill.offsetWidth || Math.min(430, Math.max(220, innerWidth - 84));
+    const height = pill.offsetHeight || 42;
+    const maxX = Math.max(margin, innerWidth - width - margin);
+    const maxY = Math.max(margin, innerHeight - height - margin);
+    const defaultX = Math.max(margin, (innerWidth - width) / 2);
+    const x = Number.isFinite(Number(saved.x)) ? margin + Number(saved.x) * Math.max(1, maxX - margin) : defaultX;
+    const y = Number.isFinite(Number(saved.y)) ? margin + Number(saved.y) * Math.max(1, maxY - margin) : margin;
+    pill.style.left = `${Math.min(maxX, Math.max(margin, x))}px`;
+    pill.style.top = `${Math.min(maxY, Math.max(margin, y))}px`;
+    pill.style.transform = 'none';
+  }
+
+  function saveBackstagePosition(x, y) {
+    const pill = document.getElementById('apb-backstage-pill');
+    if (!pill) return;
+    const margin = 8;
+    const maxX = Math.max(margin, innerWidth - pill.offsetWidth - margin);
+    const maxY = Math.max(margin, innerHeight - pill.offsetHeight - margin);
+    const clampedX = Math.min(maxX, Math.max(margin, x));
+    const clampedY = Math.min(maxY, Math.max(margin, y));
+    getRootSettings().ui.backstage = {
+      x: (clampedX - margin) / Math.max(1, maxX - margin),
+      y: (clampedY - margin) / Math.max(1, maxY - margin),
+    };
+    context()?.saveSettingsDebounced?.();
+    pill.style.left = `${clampedX}px`;
+    pill.style.top = `${clampedY}px`;
+  }
+
+  function bindBackstageDrag(pill) {
+    let drag = null;
+    pill.addEventListener('pointerdown', event => {
+      if (event.button !== 0) return;
+      const rect = pill.getBoundingClientRect();
+      drag = { pointerId: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top, startX: event.clientX, startY: event.clientY, moved: false };
+      pill.setPointerCapture?.(event.pointerId);
+      pill.classList.add('is-dragging');
+    });
+    pill.addEventListener('pointermove', event => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 6) drag.moved = true;
+      if (!drag.moved) return;
+      const x = Math.min(innerWidth - pill.offsetWidth - 8, Math.max(8, event.clientX - drag.dx));
+      const y = Math.min(innerHeight - pill.offsetHeight - 8, Math.max(8, event.clientY - drag.dy));
+      pill.style.left = `${x}px`;
+      pill.style.top = `${y}px`;
+    });
+    const finish = event => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      if (drag.moved) {
+        runtime.suppressBackstageClick = true;
+        const rect = pill.getBoundingClientRect();
+        saveBackstagePosition(rect.left, rect.top);
+      }
+      pill.classList.remove('is-dragging');
+      pill.releasePointerCapture?.(event.pointerId);
+      drag = null;
+    };
+    pill.addEventListener('pointerup', finish);
+    pill.addEventListener('pointercancel', finish);
+  }
+
   function openApp(app) {
     runtime.route = { app, view: 'root', id: '' };
     if (app === 'settings') loadApiConfig();
@@ -1145,7 +1213,9 @@ import {
     const backstagePill = document.getElementById('apb-backstage-pill');
     const backstageOverlay = document.getElementById('apb-backstage-overlay');
     bindLauncherDrag(launcher);
+    bindBackstageDrag(backstagePill);
     applyLauncherPosition();
+    applyBackstagePosition();
     launcher.addEventListener('click', () => {
       if (runtime.suppressLauncherClick) { runtime.suppressLauncherClick = false; return; }
       runtime.open = true;
@@ -1154,7 +1224,11 @@ import {
       syncContactRoster().then(() => render()).catch(() => {});
       scheduleReconcile('phone_open', 250);
     });
-    backstagePill.addEventListener('click', () => { runtime.backstageOpen = true; renderBackstage(); });
+    backstagePill.addEventListener('click', () => {
+      if (runtime.suppressBackstageClick) { runtime.suppressBackstageClick = false; return; }
+      runtime.backstageOpen = true;
+      renderBackstage();
+    });
     backstageOverlay.addEventListener('click', event => {
       if (event.target.closest('[data-apb-backstage-close]')) { runtime.backstageOpen = false; renderBackstage(); }
     });
@@ -1164,7 +1238,7 @@ import {
       const clock = document.getElementById('apb-system-time');
       if (clock) clock.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
     }, 1000);
-    addEventListener('resize', applyLauncherPosition);
+    addEventListener('resize', () => { applyLauncherPosition(); applyBackstagePosition(); });
     render(); renderBackstage();
   }
 
@@ -1176,6 +1250,7 @@ import {
       loadPhone();
       runtime.route = { app: 'home', view: 'root', id: '' };
       applyLauncherPosition();
+      applyBackstagePosition();
       render(); renderBackstage();
       syncContactRoster().then(() => { render(); renderBackstage(); }).catch(() => {});
       scheduleReconcile('chat_changed', 700);
@@ -1195,7 +1270,7 @@ import {
     bridgeToAnima('startup');
     syncContactRoster().then(() => { render(); renderBackstage(); }).catch(() => {});
     scheduleAnimaCardAdaptation(1100);
-    console.info('[Anima Phone Bridge] v0.3.1 ready');
+    console.info('[Anima Phone Bridge] v0.3.2 ready');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
