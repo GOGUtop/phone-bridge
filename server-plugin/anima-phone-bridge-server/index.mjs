@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PLUGIN_ID = 'anima-phone-bridge-server';
-const VERSION = '0.3.2';
+const VERSION = '0.3.3';
 const DATA_ROOT = path.resolve(globalThis.DATA_ROOT || path.join(process.cwd(), 'data'));
 const ROOT_DIR = path.basename(DATA_ROOT) === 'default-user'
   ? path.join(DATA_ROOT, 'anima-phone-bridge')
@@ -172,11 +172,39 @@ async function callSlot(config, slot, messages) {
   return withTimeout(selected, signal => callModel(selected, messages, signal));
 }
 
+export function normalizeJsonContent(content) {
+  const raw = String(content || '').trim();
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1] || raw;
+  const start = fenced.indexOf('{');
+  const end = fenced.lastIndexOf('}');
+  if (start < 0 || end <= start) throw new Error('模型没有返回 JSON 对象');
+  const json = fenced.slice(start, end + 1);
+  try { return JSON.stringify(JSON.parse(json)); }
+  catch (firstError) {
+    try { return JSON.stringify(JSON.parse(json.replace(/,\s*([}\]])/g, '$1'))); }
+    catch { throw new Error(`模型返回的 JSON 格式损坏：${firstError.message}`); }
+  }
+}
+
+async function callJsonSlot(config, slot, messages) {
+  const first = await callSlot(config, slot, messages);
+  try { return { ...first, content: normalizeJsonContent(first.content), repaired: false }; }
+  catch (firstError) {
+    const repairMessages = [
+      { role: 'system', content: '你是 JSON 修复器。修复输入中的语法错误，保留原字段和值，只输出一个合法 JSON 对象，不要解释，不要 Markdown。' },
+      { role: 'user', content: String(first.content || '').slice(0, 39000) },
+    ];
+    const repaired = await callSlot(config, slot, repairMessages);
+    try { return { ...repaired, content: normalizeJsonContent(repaired.content), repaired: true }; }
+    catch (repairError) { throw new Error(`${firstError.message}；自动修复仍失败：${repairError.message}`); }
+  }
+}
+
 export async function reconcileWithFallback(config, messages) {
   const updateConfigured = endpointReady(config.update);
   if (updateConfigured && Date.now() >= updateHealth.degradedUntil) {
     try {
-      const result = await callSlot(config, 'update', messages);
+      const result = await callJsonSlot(config, 'update', messages);
       Object.assign(updateHealth, {
         mode: 'update', failures: 0, lastError: '', degradedUntil: 0,
         lastSuccessAt: Date.now(), lastProvider: 'update',
@@ -192,7 +220,7 @@ export async function reconcileWithFallback(config, messages) {
     }
   }
   try {
-    const result = await callSlot(config, 'send', messages);
+    const result = await callJsonSlot(config, 'send', messages);
     updateHealth.lastProvider = 'send';
     return { ...result, provider: 'send', degraded: updateConfigured, health: publicHealth(config) };
   } catch (fallbackError) {

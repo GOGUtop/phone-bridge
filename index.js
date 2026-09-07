@@ -286,6 +286,25 @@ import {
     return content;
   }
 
+  async function refreshAnimaStatusPanel() {
+    if (!document.getElementById('anima_status_prompt_list')) return false;
+    try {
+      const animaAsset = [...document.querySelectorAll('script[src],link[href]')]
+        .map(node => node.src || node.href || '')
+        .find(url => url.includes('/Anima-Memory-System/'));
+      const moduleUrl = animaAsset
+        ? `${animaAsset.slice(0, animaAsset.indexOf('/Anima-Memory-System/') + '/Anima-Memory-System/'.length)}scripts/status.js`
+        : new URL('/scripts/extensions/third-party/Anima-Memory-System/scripts/status.js', location.origin).href;
+      const animaStatus = await import(moduleUrl);
+      if (typeof animaStatus.initStatusSettings !== 'function') return false;
+      animaStatus.initStatusSettings();
+      return true;
+    } catch (error) {
+      console.warn('[Anima Phone] unable to refresh Anima status panel', error);
+      return false;
+    }
+  }
+
   async function ensureAnimaCardAdaptation({ manual = false, attempt = 0 } = {}) {
     const settings = getRootSettings();
     if (!manual && settings.preferences.autoAnimaAdapt === false) return false;
@@ -323,7 +342,8 @@ import {
       if (!merged.ready) return false;
       if (!merged.changed) {
         runtime.animaAdaptStatus = `当前角色卡已适配：${ANIMA_PROMPT_RULE_TITLE}`;
-        if (manual) toast('当前角色卡已经适配，无需重复添加', 'info');
+        const refreshed = await refreshAnimaStatusPanel();
+        if (manual) toast(refreshed ? '当前角色卡已经适配，Anima 列表已刷新' : '当前角色卡已经适配；如列表未显示，请关闭后重新打开 Anima 面板', 'info');
         return true;
       }
       if (context()?.characterId !== characterId) throw new Error('适配过程中角色卡已切换，请重试');
@@ -332,7 +352,8 @@ import {
       character.data.extensions ||= {};
       character.data.extensions.anima_prompt_config = merged.rules;
       runtime.animaAdaptStatus = `已自动适配：${character.name || characterName()}`;
-      if (manual) toast('已把小手机规则加入当前角色卡，并保留原有提示词', 'success');
+      const refreshed = await refreshAnimaStatusPanel();
+      if (manual) toast(refreshed ? '已加入小手机规则并刷新 Anima 列表' : '已加入小手机规则；如列表未显示，请关闭后重新打开 Anima 面板', 'success');
       return true;
     } catch (error) {
       runtime.animaAdaptStatus = `适配失败：${error.message}`;
@@ -1270,7 +1291,7 @@ import {
     bridgeToAnima('startup');
     syncContactRoster().then(() => { render(); renderBackstage(); }).catch(() => {});
     scheduleAnimaCardAdaptation(1100);
-    console.info('[Anima Phone Bridge] v0.3.2 ready');
+    console.info('[Anima Phone Bridge] v0.3.3 ready');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
