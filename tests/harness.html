@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Anima Phone Bridge UI Harness</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    body { margin: 0; min-height: 100vh; overflow: hidden; background: #dfe5e9; font-family: sans-serif; }
+    #send_textarea { width: min(700px, 80vw); margin: 40px; padding: 12px; }
+  </style>
+</head>
+<body>
+  <textarea id="send_textarea">SillyTavern test harness</textarea>
+  <script>
+    const chatRows = [{ message_id: 0, name: '林澈', role: 'assistant', is_user: false, message: '开场白' }];
+    const variables = { 0: { anima_data: { 时间: '2026/09/07 16:45', 林澈: { 衣物: '黑色薄外套', 动作: '站在咖啡馆门口等候' } } } };
+    const eventHandlers = {};
+    const ctx = {
+      chatId: 'ui-harness', characterId: 0, name1: '阿遥', name2: '林澈',
+      characters: [{ name: '林澈', avatar: 'lin.png', description: '冷静但很守时。', personality: '克制、认真', scenario: '两人生活在现代城市。' }],
+      extensionSettings: {}, chatMetadata: {},
+      saveSettingsDebounced() {}, getRequestHeaders() { return {}; },
+      eventSource: { on(name, fn) { (eventHandlers[name] ||= []).push(fn); }, emit() {} },
+    };
+    window.SillyTavern = { getContext: () => ctx };
+    window.TavernHelper = {
+      getChatMessages() { return chatRows; },
+      getVariables({ message_id }) { return variables[message_id] || {}; },
+      async updateVariablesWith(fn, { message_id }) { variables[message_id] = fn(variables[message_id] || {}); },
+      async setChatMessages() {},
+    };
+    window.toastr = { info() {}, success() {}, warning() {}, error: console.error };
+  </script>
+  <script type="module" src="../index.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "anima-phone-bridge-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.mjs",
+  "description": "Server-side API key storage and one-agent proxy for Anima Phone Bridge"
+}

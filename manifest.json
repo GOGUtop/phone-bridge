@@ -1,0 +1,14 @@
+{
+  "manifest_version": 1,
+  "id": "anima_phone_bridge",
+  "display_name": "Anima 小手机桥",
+  "version": "0.1.0",
+  "description": "一部手机、一个 API：微信、群聊、朋友圈、钱包、外卖、点评和音乐，并把关键事件同步给 Anima 状态记忆。",
+  "author": "Anima Phone Bridge contributors",
+  "loading_order": 110,
+  "requires": [],
+  "optional": ["anima_memory_system"],
+  "js": "index.js",
+  "css": "style.css",
+  "auto_update": true
+}

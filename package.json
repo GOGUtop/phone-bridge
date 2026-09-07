@@ -1,0 +1,11 @@
+{
+  "name": "anima-phone-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SillyTavern virtual phone with an Anima memory bridge",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check index.js && node --check core.mjs && node --check server-plugin/anima-phone-bridge-server/index.mjs"
+  }
+}
