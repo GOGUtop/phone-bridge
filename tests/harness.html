@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Anima Phone Bridge UI Harness</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="Anima-Memory-System/marker.css">
+  <link rel="stylesheet" href="../../ai-relay/style.css">
+  <link rel="stylesheet" href="assets/css/fontawesome.min.css">
+  <link rel="stylesheet" href="assets/css/solid.min.css">
   <style>
     body { margin: 0; min-height: 100vh; overflow: hidden; background: #dfe5e9; font-family: sans-serif; }
     #send_textarea { width: min(700px, 80vw); margin: 40px; padding: 12px; }
@@ -12,6 +16,7 @@
 </head>
 <body>
   <textarea id="send_textarea">SillyTavern test harness</textarea>
+  <button id="send_but" onclick="window.sentText=document.getElementById('send_textarea').value">发送</button>
   <script>
     const chatRows = [{ message_id: 0, name: '林澈', role: 'assistant', is_user: false, message: '开场白' }];
     const variables = { 0: { anima_data: { 时间: '2026/09/07 16:45', 林澈: { 衣物: '黑色薄外套', 动作: '站在咖啡馆门口等候' } } } };
@@ -19,25 +24,36 @@
     const ctx = {
       chatId: 'ui-harness', characterId: 0, name1: '阿遥', name2: '林澈',
       characters: [{ name: '林澈', avatar: 'lin.png', description: '冷静但很守时。', personality: '克制、认真', scenario: '两人生活在现代城市。', data: { extensions: { anima_prompt_config: [{ role: 'system', title: '状态占位符', content: '{{status}}' }, { role: 'user', title: '增量剧情', content: '{{chat_context}}' }] } } }],
-      extensionSettings: {}, chatMetadata: {},
+      chat:chatRows, extensionSettings: {}, chatMetadata: {},
+      saveMetadataDebounced(){}, async saveMetadata(){},
+      setExtensionPrompt(name,text){(window.injectedPrompts||={})[name]=text;},
       saveSettingsDebounced() {}, getRequestHeaders() { return {}; },
       async writeExtensionField(characterId, key, value) { this.characters[characterId].data.extensions[key] = value; },
       eventSource: { on(name, fn) { (eventHandlers[name] ||= []).push(fn); }, emit() {} },
     };
     window.SillyTavern = { getContext: () => ctx };
+    window.harness={ctx,chatRows,variables,eventHandlers,calls:[]};
     window.TavernHelper = {
       getChatMessages() { return chatRows; },
       getVariables({ message_id }) { return variables[message_id] || {}; },
       async updateVariablesWith(fn, { message_id }) { variables[message_id] = fn(variables[message_id] || {}); },
       async setChatMessages() {},
+      getCharWorldbookNames(){return {primary:'测试世界',additional:[]};},
+      getWorldbook(){return [{name:'周宁',content:'姓名：周宁\n身份：阿遥的同事\n年龄：28\n性格：开朗\n性别：女\n周宁是阿遥的朋友。'}];},
     };
-    window.toastr = { info() {}, success() {}, warning() {}, error: console.error };
+    window.toastr = { info() {}, success() {}, warning() {}, error(...args){(window.mockErrors||=[]).push(args.join(' '));console.error(...args);} };
     const endpoint = { baseUrl: 'https://example.com/v1', apiKey: '', model: 'test-model', temperature: 0.7, maxTokens: 1200, hasApiKey: true };
     let mockConfig = { version: 2, send: { ...endpoint }, update: { ...endpoint }, updateFallbackSeconds: 60, health: { mode: 'update', updateConfigured: true } };
     const nativeFetch = window.fetch.bind(window);
     window.fetch = async (url, options = {}) => {
+      if(String(url).includes('/api/plugins/writer-ai-relay-server')) {
+        const route=String(url).split('/writer-ai-relay-server')[1];
+        const body={ok:true,config:mockConfig,models:['relay-model-a','relay-model-b'],content:route==='/generate'?'我端起碗，认真地看向桌上的下一道菜。':'连接成功'};
+        return new Response(JSON.stringify(body),{headers:{'Content-Type':'application/json'}});
+      }
       if (!String(url).includes('/api/plugins/anima-phone-bridge-server')) return nativeFetch(url, options);
       const route = String(url).split('/anima-phone-bridge-server')[1];
+      window.harness.calls.push({route,input:options.body?JSON.parse(options.body):null});
       let body = { ok: true };
       if (route === '/config' && options.method === 'POST') {
         const input = JSON.parse(options.body || '{}');
@@ -54,6 +70,10 @@
         body.models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gpt-4.1-mini'];
       } else if (route === '/test') {
         body.content = '{"reply":"连接成功"}';
+      } else if(route==='/roster') {
+        body.content=JSON.stringify({people:[{name:'周宁',evidence:'周宁是阿遥的朋友。',relationToUser:'朋友',known:true}]});
+      } else if(route==='/json') {
+        body.content=JSON.stringify({replies:[{sender:'林澈',text:'约好了，五点咖啡馆见。'}],text:'收到，我会按时到。',commitments:[{person:'林澈',at:'17:00',place:'咖啡馆',subject:'五点见面',status:'未完成'}],bridgeFacts:[],offers:[{item:'便携游戏机',merchant:'掌机专营店',amount:300,detail:'标准套装'}]});
       } else if (route === '/reconcile') {
         body = {
           ok: true,
@@ -61,6 +81,9 @@
           health: { mode: 'update', updateConfigured: true },
           content: JSON.stringify({
             contacts: [{ name: '周宁', subtitle: '世界书朋友' }],
+            groups:[{id:'work-group',name:'项目协作群',members:['林澈','周宁'],alreadyMember:true}],
+            requests:[{id:'friend-li',type:'friend',name:'李遥',source:'朋友推荐',text:'我是隔壁小组的李遥'}],
+            sms:[{id:'sms-delivery',sender:'快递服务',text:'快递已放到驿站'}],
             orderUpdates: [], commitmentUpdates: [], incomingMessages: [], walletChanges: [], moments: [],
             backstage: {
               timeline: { date: '2026/09/07', time: '16:45', location: '桥下咖啡', weather: '晴' },
@@ -75,5 +98,6 @@
     };
   </script>
   <script type="module" src="../index.js"></script>
+  <script type="module" src="../../ai-relay/index.js"></script>
 </body>
 </html>

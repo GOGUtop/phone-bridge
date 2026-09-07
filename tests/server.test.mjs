@@ -27,6 +27,9 @@ test('JSON normalizer accepts fenced output and removes trailing commas', () => 
   assert.equal(normalizeJsonContent('```json\n{"contacts":[], "backstage":{},}\n```'), '{"contacts":[],"backstage":{}}');
   assert.throws(() => normalizeJsonContent('{"contacts":[{} {}]}'), /JSON 格式损坏/);
 });
+test('trailing comma repair does not modify string values',()=>{
+  assert.deepEqual(JSON.parse(normalizeJsonContent('{"text":"保留 , } 和 , ]", "rows":[1,],}')),{text:'保留 , } 和 , ]',rows:[1]});
+});
 
 test('malformed realtime JSON is repaired with the same API before fallback', async () => {
   const originalFetch = globalThis.fetch;

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PLUGIN_ID = 'anima-phone-bridge-server';
-const VERSION = '0.3.4';
+const VERSION = '0.4.0';
 const DATA_ROOT = path.resolve(globalThis.DATA_ROOT || path.join(process.cwd(), 'data'));
 const ROOT_DIR = path.basename(DATA_ROOT) === 'default-user'
   ? path.join(DATA_ROOT, 'anima-phone-bridge')
@@ -10,7 +10,7 @@ const ROOT_DIR = path.basename(DATA_ROOT) === 'default-user'
 const CONFIG_FILE = path.join(ROOT_DIR, 'config.json');
 
 const defaultEndpoint = () => ({
-  baseUrl: '', apiKey: '', model: '', temperature: 0.7, maxTokens: 1200, timeoutSeconds: 120,
+  baseUrl: '', apiKey: '', model: '', temperature: 0.7, maxTokens: 4096, timeoutSeconds: 120,
 });
 const defaultConfig = () => ({
   version: 2, send: defaultEndpoint(), update: defaultEndpoint(), updateFallbackSeconds: 60,
@@ -181,7 +181,17 @@ export function normalizeJsonContent(content) {
   const json = fenced.slice(start, end + 1);
   try { return JSON.stringify(JSON.parse(json)); }
   catch (firstError) {
-    try { return JSON.stringify(JSON.parse(json.replace(/,\s*([}\]])/g, '$1'))); }
+    try {
+      let fixed='', quoted=false, escaped=false;
+      for(let i=0;i<json.length;i++) {
+        const c=json[i];
+        if(quoted){fixed+=c;if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')quoted=false;continue;}
+        if(c==='"')quoted=true;
+        if(c===',' && /^\s*[}\]]/.test(json.slice(i+1)))continue;
+        fixed+=c;
+      }
+      return JSON.stringify(JSON.parse(fixed));
+    }
     catch { throw new Error(`模型返回的 JSON 格式损坏：${firstError.message}`); }
   }
 }
@@ -273,6 +283,14 @@ export async function init(router) {
       const result = await callSlot(config, 'send', safeMessages(req.body?.messages));
       res.json({ ok: true, provider: 'send', ...result });
     } catch (error) { res.status(400).json({ ok: false, error: String(error?.message || error) }); }
+  });
+  router.post('/roster', async (req, res) => {
+    try { res.json({ ok: true, ...await reconcileWithFallback(loadConfig(), safeMessages(req.body?.messages)) }); }
+    catch (e) { res.status(400).json({ ok: false, error: e.message }); }
+  });
+  router.post('/json', async (req, res) => {
+    try { res.json({ ok: true, ...await callJsonSlot(loadConfig(), 'send', safeMessages(req.body?.messages)) }); }
+    catch (e) { res.status(400).json({ ok: false, error: e.message }); }
   });
   router.post('/reconcile', async (req, res) => {
     const config = loadConfig();

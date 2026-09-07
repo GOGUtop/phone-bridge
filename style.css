@@ -8,6 +8,37 @@
   --apb-red: #e9414f;
 }
 
+#apb-launcher[data-unread]:not([data-unread=""])::after{content:attr(data-unread);position:absolute;right:-5px;top:-5px;background:#db344d;color:white;border-radius:10px;min-width:18px;font:11px/18px sans-serif;padding:0 3px}
+.apb-app:active .apb-app-icon{transform:scale(.88)}
+.apb-app-icon{transition:transform 160ms ease,filter 160ms ease}
+.apb-screen{animation:apb-enter 180ms ease-out}
+.apb-message:last-child{animation:apb-message-in 200ms ease-out}
+@keyframes apb-enter{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes apb-message-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.apb-action-dialog{width:min(440px,calc(100vw - 28px));max-height:calc(100dvh - 40px);overflow:auto;box-sizing:border-box;padding:20px;border:1px solid #bdc7c4;border-radius:8px;background:#f8faf9;color:#17221e;font:14px/1.6 system-ui,sans-serif;z-index:22000}
+.apb-action-dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
+.apb-action-dialog header{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.apb-action-dialog button{border:1px solid #9db7a8;border-radius:5px;background:#dcebe1;color:#1b3826;padding:8px 12px;cursor:pointer;font:inherit}
+.apb-action-dialog input,.apb-action-dialog select{width:100%;box-sizing:border-box;min-width:0;background:#fff;color:#202820;border:1px solid #abbcaf;border-radius:5px;padding:9px;font:inherit}
+.apb-action-dialog .apb-stack-form{display:grid;gap:10px}
+.apb-action-dialog .apb-compose{position:static;height:auto;padding:10px 0;grid-template-columns:minmax(0,1fr) auto}
+.apb-screen:has(.apb-chat-tools) .apb-chat-body{height:calc(100% - 184px - env(safe-area-inset-top));box-sizing:border-box}
+.apb-chat-tools{display:flex;gap:8px;padding:6px 12px;background:#eff3f0;flex-shrink:0}
+.apb-chat-tools button{width:35px;height:32px;border:0;border-radius:5px;background:#fff;color:#334c3c;cursor:pointer}
+.apb-packet{display:grid;gap:5px;background:#ca354b!important;color:#fff!important;border:0;border-radius:6px;min-width:160px;max-width:100%;padding:14px!important;cursor:pointer;text-align:left}
+.apb-packet small{color:#ffeded!important;white-space:normal}
+.apb-account-total{display:grid;gap:10px;text-align:center;background:#e0ece5;padding:28px 10px;margin-bottom:18px}
+.apb-account-total strong{font-size:30px;color:#163d27}
+.apb-request{padding:12px 0;border-bottom:1px solid #d6dddd}.apb-request button{margin-right:8px}
+.apb-call-avatar{display:grid;place-items:center;width:72px;height:72px;background:#d8e5dc;border-radius:50%;font-size:30px;margin:14px auto}
+.apb-call-log{max-height:38vh;overflow:auto;overflow-wrap:anywhere}
+.apb-backstage-tabs{display:flex;gap:4px;overflow-x:auto;padding:10px 0;margin:0 0 14px;scrollbar-width:thin}
+.apb-backstage-tabs button{white-space:nowrap;flex:0 0 auto;border:0;border-bottom:2px solid transparent;background:transparent;color:#52645e;padding:9px 12px;font:inherit;cursor:pointer}
+.apb-backstage-tabs button[aria-selected="true"]{border-color:#1c865b;color:#165c40;font-weight:600}
+.apb-memory-state{padding:14px 0;color:#46594e;overflow-wrap:anywhere}.apb-memory-state p{font-size:12px}.apb-memory-state button{padding:8px;background:#344f43;color:#fff;border:1px solid #557164;border-radius:4px;cursor:pointer}
+.apb-icon-sms{background:#15994b!important;color:#fff}.apb-icon-calls{background:#287d51!important;color:#fff}.apb-icon-alipay{background:#007bbf!important;color:#fff}.apb-icon-bank{background:#bd3044!important;color:#fff}.apb-icon-orders{background:#3e525c!important;color:#fff}.apb-icon-taobao{background:#e35a27!important;color:#fff}.apb-icon-jd{background:#d9263b!important;color:#fff}.apb-icon-taxi{background:#f4c843!important;color:#292820}.apb-icon-flight{background:#3484bd!important;color:#fff}.apb-icon-hotel{background:#5a6268!important;color:#fff}
+@media(prefers-reduced-motion:reduce){.apb-screen,.apb-message:last-child{animation:none}.apb-app-icon{transition:none}}
+
 #apb-launcher {
   position: fixed;
   top: calc(100dvh - 134px - env(safe-area-inset-bottom));

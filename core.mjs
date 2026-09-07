@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 export const ANIMA_PROMPT_RULE_TITLE = '📱Anima 小手机桥｜状态维护补充规则';
 export const ANIMA_PROMPT_RULE_MARKER = '【Anima 小手机桥｜状态维护补充规则】';
 
@@ -56,7 +56,7 @@ export function normalizeBackstageState(input) {
   const source = input && typeof input === 'object' ? input : {};
   const timeline = source.timeline && typeof source.timeline === 'object' ? source.timeline : {};
   const cleanRows = (key, limit = 40) => Array.isArray(source[key])
-    ? source[key].filter(row => row && typeof row === 'object').slice(-limit).map(row => clone(row))
+    ? source[key].filter(row => row && typeof row === 'object').map(row => clone(row))
     : [];
   return {
     ...base,
@@ -152,16 +152,16 @@ export function normalizePhoneState(input, characterName = '联系人') {
     sync: { ...base.sync, ...(source.sync || {}) },
   };
   result.schemaVersion = SCHEMA_VERSION;
-  result.moments = Array.isArray(result.moments) ? result.moments.slice(-80) : [];
-  result.reviews = Array.isArray(result.reviews) ? result.reviews.slice(-80) : [];
-  result.eventLedger = Array.isArray(result.eventLedger) ? result.eventLedger.slice(-240) : [];
-  result.wallet.transactions = Array.isArray(result.wallet.transactions) ? result.wallet.transactions.slice(-160) : [];
-  result.delivery.orders = Array.isArray(result.delivery.orders) ? result.delivery.orders.slice(-80) : [];
+  result.moments = Array.isArray(result.moments) ? result.moments : [];
+  result.reviews = Array.isArray(result.reviews) ? result.reviews : [];
+  result.eventLedger = Array.isArray(result.eventLedger) ? result.eventLedger : [];
+  result.wallet.transactions = Array.isArray(result.wallet.transactions) ? result.wallet.transactions : [];
+  result.delivery.orders = Array.isArray(result.delivery.orders) ? result.delivery.orders : [];
   for (const thread of Object.values(result.threads)) {
-    thread.messages = Array.isArray(thread.messages) ? thread.messages.slice(-160) : [];
+    thread.messages = Array.isArray(thread.messages) ? thread.messages : [];
   }
   for (const group of Object.values(result.groups)) {
-    group.messages = Array.isArray(group.messages) ? group.messages.slice(-200) : [];
+    group.messages = Array.isArray(group.messages) ? group.messages : [];
   }
   for (const contact of Object.values(result.contacts)) {
     contact.aliases = Array.isArray(contact.aliases) ? contact.aliases.map(alias => text(alias, 80)).filter(Boolean).slice(0, 12) : [];
@@ -213,10 +213,10 @@ export function appendMessage(phone, channel, targetId, message) {
     text: text(message?.text, 3000),
     time: Number(message?.time) || Date.now(),
     status: text(message?.status, 30) || 'sent',
+    packetId: text(message?.packetId, 120),
   };
   if (!row.text) throw new Error('消息不能为空');
   target.messages.push(row);
-  target.messages = target.messages.slice(-200);
   if (row.direction === 'in') target.unread = Number(target.unread || 0) + 1;
   addEvent(state, {
     type: channel === 'group' ? 'group_message' : 'private_message',
@@ -242,7 +242,6 @@ export function addEvent(phone, event) {
   if (!row.summary) return phone;
   phone.eventLedger = Array.isArray(phone.eventLedger) ? phone.eventLedger : [];
   phone.eventLedger.push(row);
-  phone.eventLedger = phone.eventLedger.slice(-240);
   phone.updatedAt = Date.now();
   return phone;
 }
@@ -252,8 +251,9 @@ export function recordTransaction(phone, transaction) {
   const requestedId = text(transaction?.id || transaction?.sourceId, 120);
   if (requestedId && state.wallet.transactions.some(row => row.id === requestedId)) return state;
   const account = ['wechat', 'alipay', 'bank'].includes(transaction?.account) ? transaction.account : 'wechat';
-  const amount = Number(transaction?.amount);
-  if (!Number.isFinite(amount) || amount === 0) throw new Error('金额必须为非零数字');
+  const cents = Math.round(Number(transaction?.amount)*100);
+  if (!Number.isSafeInteger(cents) || cents === 0) throw new Error('金额至少一分钱且必须为有效数字');
+  const amount = cents/100;
   const balance = Number(state.wallet[account] || 0) + amount;
   if (balance < 0) throw new Error('余额不足');
   state.wallet[account] = Math.round(balance * 100) / 100;
@@ -387,7 +387,7 @@ export function applyNarrativeUpdate(phone, payload, meta = {}) {
     }
   }
 
-  for (const [index, message] of (Array.isArray(payload?.incomingMessages) ? payload.incomingMessages : []).slice(0, 8).entries()) {
+  for (const [index, message] of (Array.isArray(payload?.incomingMessages) ? payload.incomingMessages : []).entries()) {
     const channel = message?.channel === 'group' ? 'group' : 'private';
     let targetId = text(message?.targetId, 100);
     if (channel === 'private' && (!targetId || !state.threads[targetId])) {
