@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "anima_phone_bridge",
   "display_name": "Anima 小手机桥",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "双 API 同一世界小手机：NPC 社交、支付订单、幕后生活、知情边界及 Anima 记忆写入与召回。",
   "author": "Anima Phone Bridge contributors",
   "loading_order": 110,

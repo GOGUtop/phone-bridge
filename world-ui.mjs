@@ -20,8 +20,8 @@ export function createWorldUI(host) {
     const dialog = document.createElement('dialog'); dialog.id='apb-action-dialog'; dialog.className='apb-action-dialog';
     dialog.innerHTML=`<header><strong>${e(title)}</strong><button type="button" data-w-close title="关闭"><i class="fa-solid fa-xmark"></i></button></header>${html}`;
     document.body.append(dialog); dialog.showModal();
-    dialog.addEventListener('click',event=>{ if(event.target.closest('[data-w-close]')) dialog.close(); else click(event).catch(host.error); });
-    dialog.addEventListener('submit',event=>{ event.preventDefault(); submit(event.target).catch(host.error); });
+    dialog.addEventListener('click',async event=>{try{if(event.target.closest('[data-w-close]'))dialog.close();else if(!await host.extraClick?.(event))await click(event);}catch(error){host.error(error);}});
+    dialog.addEventListener('submit',async event=>{event.preventDefault();try{if(!await host.extraSubmit?.(event.target))await submit(event.target);}catch(error){host.error(error);}});
     dialog.addEventListener('close',()=>dialog.remove(),{once:true});
   }
   const close = () => document.getElementById('apb-action-dialog')?.close();
@@ -106,9 +106,9 @@ export function createWorldUI(host) {
     if(form.hasAttribute('data-w-account')) {
       const account=form.dataset.wAccount;
       if(!Number.isFinite(Number(data.amount))||Number(data.amount)<=0)throw new Error('转账金额必须大于零');
-      runtime.phone=recordTransaction(phone(),{account,amount:-Number(data.amount),counterparty:data.counterparty,kind:'转账',note:data.note}); await done('account_transfer');return true;
+      runtime.phone=recordTransaction(phone(),{account,amount:-Number(data.amount),counterparty:data.counterparty,kind:'转账',note:data.note});close();await done('account_transfer');return true;
     }
-    if(form.hasAttribute('data-w-service')) {runtime.phone=addServiceOrder(phone(),{...data,app:form.dataset.wService},user());close();await done('service_order');return true;}
+    if(form.hasAttribute('data-w-service')) {runtime.phone=addServiceOrder(phone(),{...data,app:form.dataset.wService},user());if(form.dataset.cartId)world().carts=(world().carts||[]).filter(c=>c.id!==form.dataset.cartId);close();await done('service_order');return true;}
     if(form.hasAttribute('data-w-dial')) { await startCall(data.name);return true; }
     if(form.hasAttribute('data-w-sms')||form.hasAttribute('data-w-call-message')||form.hasAttribute('data-w-order-message')) {
       if(runtime.busy)return true;
@@ -165,5 +165,5 @@ export function createWorldUI(host) {
   }
   function incomingCall() {const c=world().calls.find(c=>c.status==='来电中');if(c&&!document.getElementById('apb-action-dialog'))callView(c.id);}
   function afterRender(){const slot=document.querySelector('[data-w-audio]');if(slot&&audio.getAttribute('src')){audio.controls=true;audio.style.width='100%';slot.append(audio);}}
-  return { screen, click, submit, requests, packet, payments, incomingCall, afterRender };
+  return { screen, click, submit, requests, packet, payments, incomingCall, afterRender, modal, close };
 }

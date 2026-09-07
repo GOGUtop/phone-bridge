@@ -1,0 +1,172 @@
+/* App surfaces are scoped so Tavern themes cannot change control geometry. */
+#apb-overlay .xp{--brand:#16864b;display:flex;flex-direction:column;height:100%;min-height:0;background:#f5f5f5;color:#191919;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;letter-spacing:0}
+#apb-overlay .xp *{box-sizing:border-box;letter-spacing:0;min-width:0}
+#apb-overlay .xp button{font:inherit;cursor:pointer;color:inherit;border:0;border-radius:0;background:transparent;box-shadow:none;margin:0;line-height:1.4}
+#apb-overlay .xp button:active{filter:brightness(.91);transform:scale(.98)}
+#apb-overlay .xp button:disabled{opacity:.55;cursor:wait}
+#apb-overlay .xp button:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+#apb-overlay .xp :is(input,select,textarea){font:inherit;box-shadow:none;color:#202020;background:white;border:1px solid #ddd;border-radius:5px;padding:9px;width:100%;margin:0;max-width:100%}
+#apb-overlay .xp input[type=radio]{width:16px;height:16px;accent-color:var(--brand)}
+#apb-overlay .xp img{display:block;object-fit:cover;max-width:100%}
+#apb-overlay .xp p{margin:8px 0;overflow-wrap:anywhere}
+#apb-overlay .xp :is(h1,h2,h3){margin:0;font-weight:650;color:inherit;letter-spacing:0;overflow-wrap:anywhere}
+#apb-overlay .xp h2{font-size:21px}#apb-overlay .xp h3{font-size:15px}
+#apb-overlay .xp small{display:block;font-size:12px;color:#777;overflow-wrap:anywhere}
+#apb-overlay .xp-top{display:flex;align-items:center;gap:8px;flex:0 0 54px;padding:8px 12px;border-bottom:1px solid #dedede;background:#f5f5f5}
+#apb-overlay .xp-top>strong{flex:1;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#apb-overlay .xp-top>div{display:flex;gap:3px}
+#apb-overlay .xp-top button,#apb-overlay .xp-icon-button{display:inline-grid;place-items:center;width:32px;height:32px;padding:0;font-size:17px;flex-shrink:0}
+#apb-overlay .xp-body{flex:1;min-height:0;height:auto;padding:0 14px 18px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+#apb-overlay .xp-nav{display:flex;flex:0 0 58px;border-top:1px solid #e0e0e0;background:#fafafa;padding:5px 4px}
+#apb-overlay .xp-nav button{display:flex;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:2px;font-size:11px;color:#666}
+#apb-overlay .xp-nav i{font-size:20px}#apb-overlay .xp-nav [aria-current=page]{color:var(--brand)}
+#apb-overlay .xp-search{display:flex;align-items:center;gap:8px;background:#fff;border-radius:6px;margin:12px 0;padding:0 10px;color:#999;min-height:37px}
+#apb-overlay .xp-search input{border:0;padding:8px 0;background:transparent;min-height:36px;flex:1;font-size:13px}
+#apb-overlay .xp-search>button{color:var(--brand);padding:6px 0;white-space:nowrap}
+#apb-overlay .xp-empty{display:grid;justify-items:center;padding:44px 12px;color:#999;text-align:center;font-size:13px}
+#apb-overlay .xp-empty>i{font-size:30px;color:#bdc2c4;margin-bottom:8px}
+#apb-overlay .xp-section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:18px 0 10px}
+#apb-overlay .xp-section-title>button{font-size:12px;color:#777}
+#apb-overlay .xp-avatar{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:5px;background:hsl(var(--avatar-hue) 22% 84%);color:hsl(var(--avatar-hue) 30% 26%);font-size:16px;font-weight:600}
+#apb-overlay .xp-avatar-group{background:#dde5de;color:#5b7864;font-size:23px}
+#apb-overlay .xp-avatar-wrap{position:relative;flex-shrink:0}
+#apb-overlay .xp-badge{position:absolute;right:-6px;top:-5px;background:#df4242;color:white;min-width:17px;height:17px;text-align:center;border-radius:10px;font-size:10px;line-height:17px;padding:0 3px}
+#apb-overlay :is(.xp-chat-row,.xp-contact,.xp-call-row){display:flex;width:100%;align-items:center;gap:12px;text-align:left;padding:13px 0!important;border-bottom:1px solid #e5e5e5!important;min-height:72px}
+#apb-overlay .xp-chat-row>span:nth-child(2),#apb-overlay .xp-contact>span:nth-child(2),#apb-overlay .xp-call-row>div{flex:1;overflow:hidden}
+#apb-overlay .xp-chat-row strong,#apb-overlay .xp-contact strong{font-size:16px;font-weight:500}
+#apb-overlay .xp-chat-row small{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:4px}
+#apb-overlay .xp time{font-size:11px;color:#999;white-space:nowrap}
+#apb-overlay .xp-chat-row time{align-self:flex-start;padding-top:2px}
+#apb-overlay .xp-contact>i{font-size:11px;color:#aaa}
+#apb-overlay .xp-menu-row{display:flex;width:100%;align-items:center;gap:13px;background:white!important;text-align:left;padding:17px 14px!important;margin:8px 0!important}
+#apb-overlay .xp-menu-row>span:nth-child(2){flex:1}#apb-overlay .xp-menu-row>i{color:#bbb;font-size:12px}
+#apb-overlay .xp-menu-icon{width:25px;color:var(--brand);font-size:22px;text-align:center}
+#apb-overlay .xp-roster-status{display:flex;align-items:center;justify-content:space-between;color:#888;font-size:11px;padding:15px 0;overflow-wrap:anywhere}
+#apb-overlay .xp-profile{display:flex;gap:18px;align-items:center;padding:32px 5px}
+#apb-overlay .xp-profile .xp-avatar{width:64px;height:64px;font-size:23px}
+#apb-overlay .xp-profile h2{font-size:22px;margin-bottom:8px}
+#apb-overlay .xp-moments .xp-body{padding:0;background:white}
+#apb-overlay .xp-moment-cover{height:220px;position:relative;margin-bottom:35px}
+#apb-overlay .xp-moment-cover>img{width:100%;height:100%}
+#apb-overlay .xp-moment-cover>div{position:absolute;bottom:-18px;right:18px;display:flex;align-items:center;gap:14px}
+#apb-overlay .xp-moment-cover strong{color:white;text-shadow:0 1px 4px #000;font-size:18px}
+#apb-overlay .xp-moment-cover .xp-avatar{width:65px;height:65px;border:3px solid white}
+#apb-overlay .xp-moment{display:grid;grid-template-columns:42px minmax(0,1fr);gap:12px;border-bottom:1px solid #eee;padding:20px 16px}
+#apb-overlay .xp-moment .xp-avatar{width:40px;height:40px}
+#apb-overlay .xp-social-name,#apb-overlay .xp-social-comments{color:#566780}
+#apb-overlay .xp-moment-actions{display:flex;align-items:center;gap:4px}.xp-moment-actions time{flex:1}
+#apb-overlay .xp-moment-actions button{font-size:14px}
+#apb-overlay .xp-social-comments{background:#f3f3f3;font-size:12px;padding:4px 7px;overflow-wrap:anywhere}
+#apb-overlay .xp-large-title{font-size:29px;padding:18px 0 6px}
+#apb-overlay .xp-sms,#apb-overlay .xp-calls{background:#fff;--brand:#187cea}
+#apb-overlay .xp-sms .xp-search,#apb-overlay .xp-calls .xp-search{background:#eee}
+#apb-overlay .xp-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;padding:20px 12px}
+#apb-overlay .xp-keypad button{display:grid;place-content:center;aspect-ratio:1;border-radius:50%;background:#ececee;max-width:75px;width:100%;justify-self:center}
+#apb-overlay .xp-keypad strong{font-size:28px;font-weight:400}#apb-overlay .xp-keypad small{font-size:9px;color:#333}
+#apb-overlay .xp-dial-form>input{margin-top:20px;text-align:center;font-size:23px;border:0}
+#apb-overlay .xp-dial-actions{display:flex;justify-content:center;align-items:center;gap:25px}
+#apb-overlay .xp-call-button{background:#2bc45d!important;border-radius:50%!important;width:65px;height:65px;font-size:25px!important;color:white!important}
+#apb-overlay .xp-alipay{--brand:#1677ff}#apb-overlay .xp-bank{--brand:#bf2733}#apb-overlay .xp-taobao{--brand:#ff5900}#apb-overlay .xp-jd{--brand:#e8293c}#apb-overlay .xp-eleme{--brand:#008eef}#apb-overlay .xp-meituan{--brand:#b17d00}#apb-overlay .xp-dianping{--brand:#f5672c}#apb-overlay .xp-music{--brand:#cf283b}#apb-overlay .xp-taxi{--brand:#c87514}#apb-overlay .xp-flight,#apb-overlay .xp-hotel{--brand:#187ce1}
+#apb-overlay .xp-wechat-pay{display:grid;grid-template-columns:1fr 1fr;margin:16px 0 2px;background:#259763;border-radius:7px;color:white;min-height:145px}
+#apb-overlay .xp-wechat-pay button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;font-size:16px}
+#apb-overlay .xp-wechat-pay i{font-size:29px}#apb-overlay .xp-wechat-pay small{color:#d3ebdd}
+#apb-overlay .xp-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:#fff;padding:9px 0}
+#apb-overlay .xp-feature-grid button{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 3px;font-size:12px}
+#apb-overlay .xp-feature-grid i{font-size:24px;color:var(--brand)}
+#apb-overlay .xp-alipay-head{background:#1677ff;padding:2px 12px 18px;margin:0 -14px;color:white}
+#apb-overlay .xp-finance-shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#apb-overlay .xp-finance-shortcuts button{display:grid;gap:10px;justify-items:center;font-size:12px}.xp-finance-shortcuts i{font-size:27px}
+#apb-overlay .xp-asset-total{padding:24px 5px;border-bottom:1px solid #ddd}
+#apb-overlay .xp-asset-total>span{font-size:12px;color:#777}#apb-overlay .xp-asset-total>strong{display:block;font-size:32px;margin:9px 0}
+#apb-overlay .xp-asset-total>div{display:flex;gap:18px;color:var(--brand);font-size:12px}
+#apb-overlay .xp-bank-welcome{padding:23px 0 0}#apb-overlay .xp-bank-welcome>span{font-size:12px;color:#999}
+#apb-overlay .xp-bill{display:flex;gap:10px;padding:15px 0;border-bottom:1px solid #e5e5e5;align-items:center}.xp-bill>div{flex:1}
+#apb-overlay .xp-bill>span{width:35px;height:35px;display:grid;place-items:center;background:#eee;border-radius:50%;color:var(--brand)}
+#apb-overlay .xp-bill b{font-size:15px;white-space:nowrap}.xp-bill b.in{color:#188550}
+#apb-overlay .xp-shop-search{border:1px solid var(--brand);border-radius:20px;padding-left:14px}
+#apb-overlay .xp-shop-search{display:flex;align-items:center;gap:8px;background:#fff;margin:12px 0;padding:3px 4px 3px 12px;min-height:40px}
+#apb-overlay .xp-shop-search input{border:0;background:transparent;flex:1;padding:6px 0;font-size:13px}
+#apb-overlay .xp-shop-search>button{flex-shrink:0;white-space:nowrap;font-size:12px}
+#apb-overlay .xp-shop-search>button{background:var(--brand);color:white;border-radius:16px;padding:6px 12px}
+#apb-overlay .xp-shop-categories,#apb-overlay .xp-food-categories{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:7px 0 15px}
+#apb-overlay .xp-shop-categories button,#apb-overlay .xp-food-categories button{display:grid;justify-items:center;gap:8px;font-size:11px}
+#apb-overlay .xp-shop-categories i{font-size:23px;color:var(--brand)}
+#apb-overlay .xp-shopping-promo{position:relative;height:164px;overflow:hidden;background:#f1e8e2}
+#apb-overlay .xp-shopping-promo>img{width:100%;height:100%;object-position:75% 50%}
+#apb-overlay .xp-shopping-promo>div{position:absolute;left:12px;top:18px;display:grid;gap:8px;max-width:60%;padding:8px;background:#ffffffe8;border-radius:4px}
+#apb-overlay .xp-shopping-promo strong{font-size:18px;line-height:1.35}#apb-overlay .xp-shopping-promo button{font-size:12px;justify-self:start;color:var(--brand)}
+#apb-overlay .xp-product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#apb-overlay .xp-product{background:#fff;border-radius:6px;overflow:hidden;margin-bottom:10px}
+#apb-overlay .xp-product>button{display:block;width:100%;text-align:left}
+#apb-overlay .xp-product img{width:100%;aspect-ratio:1;object-fit:cover}
+#apb-overlay .xp-product>button>div{padding:10px}
+#apb-overlay .xp-product h3{font-size:14px;font-weight:500;line-height:1.4}
+#apb-overlay .xp-product small{font-size:10px;margin:5px 0}
+#apb-overlay .xp-product p{display:flex;align-items:center;justify-content:space-between;gap:3px;color:var(--brand);margin-bottom:0}
+#apb-overlay .xp-product p b{font-size:18px}#apb-overlay .xp-product p span{font-size:10px}
+#apb-overlay .xp-tabs{display:flex;gap:18px;border-bottom:1px solid #ddd;margin-bottom:12px}
+#apb-overlay .xp-tabs button{padding:12px 2px;border-bottom:2px solid transparent;font-size:13px}
+#apb-overlay .xp-tabs .active{color:var(--brand);border-color:var(--brand)}
+#apb-overlay .xp-order-card{background:white;border-radius:6px;margin:12px 0;padding:13px}
+#apb-overlay .xp-order-card header{display:flex;gap:8px;justify-content:space-between;font-size:12px;margin-bottom:15px}
+#apb-overlay .xp-order-card header span{color:var(--brand);white-space:nowrap}
+#apb-overlay .xp-order-card>div{display:flex;gap:10px;align-items:flex-start}.xp-order-card>div>span{flex:1}
+#apb-overlay .xp-order-card img{width:58px;height:58px;border-radius:4px}.xp-order-card>div>span>strong{font-size:13px}
+#apb-overlay .xp-order-card footer{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}
+#apb-overlay .xp-order-card footer button{font-size:11px;padding:6px 8px;border:1px solid #ddd;border-radius:5px}
+#apb-overlay .xp-cart-row{display:flex;flex-wrap:wrap;gap:10px;padding:14px 0;border-bottom:1px solid #ddd;align-items:center}
+#apb-overlay .xp-cart-row>img{width:64px;height:64px}.xp-cart-row>div:nth-child(2){flex:1;min-width:130px}
+#apb-overlay .xp-cart-row>button{color:var(--brand)}#apb-overlay .xp-cart-controls{display:flex;align-items:center}
+#apb-overlay .xp-food-header{margin:0 -14px;padding:13px 14px 1px;background:#008eef;color:white}
+#apb-overlay .xp-meituan .xp-food-header{background:#ffdc49;color:#292719}
+#apb-overlay .xp-food-categories{grid-template-columns:repeat(4,1fr);padding-top:20px}
+#apb-overlay .xp-food-categories i{font-size:23px;color:var(--brand);background:#fff;padding:12px;border-radius:50%}
+#apb-overlay .xp-food-promo{position:relative;height:148px;overflow:hidden}
+#apb-overlay .xp-food-promo>img{width:100%;height:100%;object-position:center}
+#apb-overlay .xp-food-promo>div{position:absolute;left:10px;top:12px;background:#fffffff0;max-width:75%;padding:10px;display:grid;gap:8px;border-radius:4px}
+#apb-overlay .xp-food-promo strong{font-size:18px}#apb-overlay .xp-food-promo button{font-size:12px;color:var(--brand);text-align:left}
+#apb-overlay .xp-store{display:flex;align-items:center;gap:12px;text-align:left;padding:16px 0!important;border-bottom:1px solid #ddd!important;width:100%}
+#apb-overlay .xp-store>img{width:82px;height:82px;border-radius:5px}.xp-store>span{flex:1}.xp-store>i{font-size:11px;color:#aaa}
+#apb-overlay .xp-store strong{display:block;font-size:16px;margin-bottom:5px}#apb-overlay .xp-store em{display:block;font-style:normal;font-size:12px;color:var(--brand);margin-top:5px}
+#apb-overlay .xp-store-head{display:flex;align-items:center;gap:14px;padding:18px 0}.xp-store-head>img{width:76px;height:76px;border-radius:5px}
+#apb-overlay .xp-menu-layout{display:grid;grid-template-columns:45px minmax(0,1fr);gap:10px}.xp-menu-layout aside{font-size:12px;color:#888;line-height:50px;background:#eee;text-align:center}
+#apb-overlay .xp-food-item{display:flex;align-items:center;gap:8px;padding:14px 0;border-bottom:1px solid #eee}
+#apb-overlay .xp-food-item img{width:54px;height:65px;border-radius:4px}.xp-food-item>div{flex:1}
+#apb-overlay .xp-food-item h3{font-size:13px}.xp-food-item strong{color:#d85537}.xp-food-item button{color:var(--brand)!important;font-size:21px!important}
+#apb-overlay .xp-discovery-categories{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:9px 0}
+#apb-overlay .xp-discovery-categories img{width:48px;height:48px;border-radius:50%;margin:0 auto 6px}.xp-discovery-categories span{font-size:11px}
+#apb-overlay .xp-local-review{border-bottom:1px solid #ddd;padding:13px 0;font-size:13px}
+#apb-overlay .xp-travel-banner{position:relative;height:150px;margin:0 -14px 0}.xp-travel-banner>img{width:100%;height:100%}
+#apb-overlay .xp-travel-banner>div{position:absolute;left:16px;bottom:18px;color:white;text-shadow:0 1px 5px #000;background:#0005;padding:8px}.xp-travel-banner small{color:white!important}
+#apb-overlay .xp-travel-form{padding:15px 0;display:grid;gap:16px}.xp-travel-form label{display:grid;gap:7px;font-size:12px;color:#777}
+#apb-overlay .xp-form-pair{display:flex;gap:10px;align-items:center}.xp-form-pair>label{flex:1}
+#apb-overlay .xp-primary{background:var(--brand)!important;color:white!important;padding:12px!important;border-radius:5px!important;width:100%}
+#apb-overlay .xp-flight-result{display:flex;align-items:center;gap:12px;padding:18px 10px!important;background:white!important;width:100%;margin-bottom:12px!important;text-align:left}
+#apb-overlay .xp-flight-result>span{flex:1;display:grid;gap:5px}.xp-flight-result b{color:var(--brand)}.xp-flight-result i{color:var(--brand)}
+#apb-overlay .xp-taxi-scene{position:relative;height:230px;margin:0 -14px}.xp-taxi-scene>img{width:100%;height:100%}
+#apb-overlay .xp-location-bubble{position:absolute;bottom:18px;left:12px;right:12px;padding:9px;background:#fff;color:#333;border-radius:5px;font-size:12px}
+#apb-overlay .xp-taxi-panel{padding:18px 0}.xp-taxi-panel h2{margin-bottom:12px!important}.xp-taxi-panel form{display:grid;gap:12px}
+#apb-overlay .xp-taxi-panel form>label{display:flex;align-items:center;gap:8px}.xp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}.xp-dot.green{background:#33ac6a}.xp-dot.amber{background:#e09921}
+#apb-overlay .xp-ride-options{display:flex;gap:12px;font-size:12px}.xp-ride-options label{display:flex;gap:4px;align-items:center}
+#apb-overlay .xp-music-cover{position:relative;height:200px;overflow:hidden}.xp-music-cover>img{width:100%;height:100%}
+#apb-overlay .xp-music-cover>div{position:absolute;bottom:15px;left:12px;right:12px;background:#fffffff0;padding:10px;border-radius:4px}.xp-music-cover button{font-size:12px!important;color:var(--brand)!important;margin-top:8px!important}
+#apb-overlay .xp-music-shortcuts{display:flex;gap:24px;padding:19px 5px 0;color:var(--brand);font-size:12px}
+#apb-overlay .xp-song{display:flex;gap:3px;align-items:center;border-bottom:1px solid #e7e7e7;padding:10px 0}.xp-song>button:first-child{display:flex;flex:1;align-items:center;gap:9px;text-align:left}.xp-song>button>span:nth-last-child(2){flex:1}
+#apb-overlay .xp-song img{width:42px;height:42px;border-radius:4px}.xp-song strong{font-size:13px}.xp-song small{font-size:11px!important}.xp-song-number{width:16px;color:#aaa;font-size:12px}.xp-song i{font-size:13px}
+#apb-overlay .xp-now-playing{display:flex;gap:8px;align-items:center;background:white;position:sticky;bottom:-18px;padding:10px 0;border-top:1px solid #ddd}.xp-now-playing img{width:38px;height:38px;border-radius:50%}.xp-now-playing>span{flex:1;font-size:12px}
+#apb-overlay .xp [hidden]{display:none!important}
+.apb-action-dialog .xp-product-detail img{width:100%;height:210px;object-fit:cover;border-radius:5px}.apb-action-dialog .xp-product-detail h2{font-size:20px}.apb-action-dialog .xp-product-detail>strong{font-size:24px;color:#d85129}.apb-action-dialog .xp-detail-actions{display:flex;gap:10px;margin-top:16px}.apb-action-dialog .xp-detail-actions button{flex:1}.apb-action-dialog .xp-order-detail dd{margin:0 0 10px;overflow-wrap:anywhere}.apb-action-dialog textarea{width:100%;box-sizing:border-box;background:#fff;color:#222;border:1px solid #bbb;padding:10px;font:inherit}.apb-action-dialog .xp-contact{display:flex;gap:15px;width:100%;margin:5px 0;align-items:center}.apb-action-dialog .xp-pay-identity{text-align:center}
+#apb-overlay .apb-home{background:linear-gradient(#0001,#0003),url('./assets/sea.jpg') center/cover;min-height:0;height:100%;box-sizing:border-box}
+#apb-overlay .xp{padding-top:44px;box-sizing:border-box}
+#apb-overlay .apb-phone:has(.xp) .apb-status-bar{color:#202020;text-shadow:none;background:#f5f5f5}
+#apb-overlay .apb-now-playing{color:#222}
+#apb-overlay .apb-now-playing span,#apb-overlay .apb-now-playing button{color:#555}
+#apb-overlay .apb-home-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;height:28px;font-size:14px;text-shadow:0 1px 4px #0008}
+#apb-overlay .apb-home-toolbar button{width:28px;height:28px;border:0;border-radius:50%;background:#0004;color:white;cursor:pointer;font-size:16px;display:grid;place-items:center}
+#apb-overlay .apb-app-icon img{width:100%;height:100%;border-radius:inherit;object-fit:cover}
+#apb-overlay .apb-app>span:last-child{color:#fff;text-shadow:0 1px 4px #0008}
+#apb-overlay .apb-widget,#apb-overlay .apb-now-playing{background:#ffffffdd;backdrop-filter:blur(15px)}
+#apb-overlay .apb-bridge-pill{color:#fff;background:#152a3290}
+#apb-backstage-overlay [data-apb-scene-retry]{background:#e5eee9;border:1px solid #bacdc1;color:#24553b;padding:9px 12px;border-radius:4px;font:inherit;cursor:pointer}
+@media(max-width:360px){#apb-overlay .xp-product>button>div{padding:8px}#apb-overlay .xp-store>img{width:65px;height:65px}#apb-overlay .xp-ride-options{gap:7px}#apb-overlay .xp-keypad{gap:10px 16px;padding:16px 10px}}
+@media(prefers-reduced-motion:reduce){#apb-overlay .xp button:active{transform:none}}

@@ -1,4 +1,13 @@
 import { ensureWorld, hash } from './world.mjs';
+export function memoryUuid(cryptoApi=globalThis.crypto) {
+  if(typeof cryptoApi?.randomUUID==='function')return cryptoApi.randomUUID();
+  const bytes=new Uint8Array(16);
+  if(typeof cryptoApi?.getRandomValues==='function')cryptoApi.getRandomValues(bytes);
+  else for(let i=0;i<16;i++)bytes[i]=Math.floor(Math.random()*256);
+  bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+  const hex=[...bytes].map(b=>b.toString(16).padStart(2,'0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
 
 export async function animaModule(file) {
   const urls = [...document.querySelectorAll('script[src],link[href]')].map(n => n.src || n.href);
@@ -49,7 +58,7 @@ export async function syncMemory(phone, scope, userName, isCurrent, save) {
       const text = batch.map(formatMemory).join('\n\n');
       const batchKey = hash(batch.map(r => `${r.id}:${hash(formatMemory(r))}`).join('|'));
       memory.batchIds ||= {};
-      const uuid = memory.batchIds[batchKey] ||= crypto.randomUUID();
+      const uuid = memory.batchIds[batchKey] ||= memoryUuid();
       const result = await callBackend('/insert', { text, tags: ['小手机桥',scope], timestamp: Date.now(), collectionId, uuid, index: null, batch_id: batchKey, bm25Config: { enabled: false } });
       if (!result?.vectorId) throw new Error(result?.error || 'Anima 未返回向量写入凭据');
       for (const row of batch) memory.written[row.id] = hash(formatMemory(row));

@@ -1,0 +1,159 @@
+[
+  {
+    "app": "wechat",
+    "name": "微信",
+    "page": "https://apps.apple.com/cn/app/%E5%BE%AE%E4%BF%A1/id414478124?uo=4",
+    "version": "8.0.76",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/aa/4b/f3/aa4bf3ed-2e7b-f100-cf89-567db2bb53bb/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/44/b0/0a/44b00a76-1b7c-d46d-e419-91599dc42872/b4a78ce5-b85e-4475-9761-79c3d0564cc4_1_U6d88_U606f_U5217_U8868_ios_1242_U00d72208.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/15/76/a7/1576a71e-6ec8-92af-6ec6-a715e78a0ca3/021c1617-8529-4b9e-8951-cbb57d3ef5ab_2_U7fa4_U804a_ios_1242_U00d72208.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "alipay",
+    "name": "支付宝-你的AI生活伙伴",
+    "page": "https://apps.apple.com/cn/app/%E6%94%AF%E4%BB%98%E5%AE%9D-%E4%BD%A0%E7%9A%84ai%E7%94%9F%E6%B4%BB%E4%BC%99%E4%BC%B4/id333206289?uo=4",
+    "version": "12.12.26",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/e9/69/9d/e9699d08-af06-20be-35e4-394c3b800af7/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/a8/e3/f4/a8e3f44a-e8a9-078d-0519-202f6630787d/iPhone6_Plus-1.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/62/32/9e/62329e86-a730-fd53-1d8c-bec3e6061ef5/iPhone6_Plus-2.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "meituan",
+    "name": "美团外卖-外卖订餐,送啥都快",
+    "page": "https://apps.apple.com/cn/app/%E7%BE%8E%E5%9B%A2%E5%A4%96%E5%8D%96-%E5%A4%96%E5%8D%96%E8%AE%A2%E9%A4%90-%E9%80%81%E5%95%A5%E9%83%BD%E5%BF%AB/id737310995?uo=4",
+    "version": "8.81.10",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/79/7b/f3/797bf3b0-2770-59f9-a16a-da507450c4c1/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/c1/fd/df/c1fddfe2-378b-f87b-a76d-7c4f4962864b/5.5_U5927_U989d_U795e_U5238.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/33/8f/e8/338fe865-1421-0fd3-2061-5411341ac67e/5.5_U7f8e_U56e2_U62fc_U597d_U996d.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "eleme",
+    "name": "淘宝闪购-点外卖更优惠",
+    "page": "https://apps.apple.com/cn/app/%E6%B7%98%E5%AE%9D%E9%97%AA%E8%B4%AD-%E7%82%B9%E5%A4%96%E5%8D%96%E6%9B%B4%E4%BC%98%E6%83%A0/id507161324?uo=4",
+    "version": "12.8.88",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/bf/1a/8a/bf1a8ade-77a0-d667-d7d8-c590343de98a/AppIcon_new-0-1x_U007epad-0-1-0-85-220-0.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/be/0e/67/be0e67ae-9d01-9a8a-26cf-36cac473dce9/1__U5168_U9762_U5347_U7ea7_1242_U200a_U00d7_U200a2688.png/320x480bb.jpg",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/d6/63/49/d663498c-a027-5360-4fc3-a36470a3586c/2__U7206_U7ea2_U5305_1242_U200a_U00d7_U200a2688.png/320x480bb.jpg"
+    ]
+  },
+  {
+    "app": "taobao",
+    "name": "淘宝-万能的淘宝！",
+    "page": "https://apps.apple.com/cn/app/%E6%B7%98%E5%AE%9D-%E4%B8%87%E8%83%BD%E7%9A%84%E6%B7%98%E5%AE%9D/id387682726?uo=4",
+    "version": "10.66.0",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d5/e0/39/d5e039f9-63e8-9692-d145-162dc25cad8b/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/05/0d/04/050d0475-1156-d8b6-2b8a-ca3e82f2a86f/_U4e07_U80fd_U7684_U6dd8_U5b9d.jpg/320x480bb.jpg",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/4b/09/00/4b090001-bda7-b6b7-0720-95be8f0776e6/_U6dd8_U5b9d_U641c_U7d22.jpg/320x480bb.jpg"
+    ]
+  },
+  {
+    "app": "jd",
+    "name": "京东-又好又便宜",
+    "page": "https://apps.apple.com/cn/app/%E4%BA%AC%E4%B8%9C-%E5%8F%88%E5%A5%BD%E5%8F%88%E4%BE%BF%E5%AE%9C/id414245413?uo=4",
+    "version": "16.0.0",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/13/68/c9/1368c9dc-7f0d-dd9d-48b7-670a5faaa784/AppIcon-0-0-1x_U007epad-0-1-0-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/4e/ea/6f/4eea6fff-7110-6b38-7ffd-6c466921c5bf/iphonePlus_1_1242x2208.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/c0/06/f7/c006f7f4-b6c2-c211-5900-0b38f034a582/iphonePlus_2_1242x2208.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "dianping",
+    "name": "大众点评 - 吃喝玩乐指南",
+    "page": "https://apps.apple.com/cn/app/%E5%A4%A7%E4%BC%97%E7%82%B9%E8%AF%84-%E5%90%83%E5%96%9D%E7%8E%A9%E4%B9%90%E6%8C%87%E5%8D%97/id351091731?uo=4",
+    "version": "11.71.3",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/f2/cf/eb/f2cfebf5-e9e7-4644-218e-d66fccf2f81f/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/1b/2a/79/1b2a796a-55d2-4dff-b711-9ae048183840/_U00285.5_U5bf8_U00291242_x_2208px-1.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/ce/84/3d/ce843d2e-0152-55e0-e232-d9e8efba0e69/_U00285.5_U5bf8_U00291242_x_2208px-2.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "music",
+    "name": "网易云音乐-数亿音乐畅听",
+    "page": "https://apps.apple.com/cn/app/%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90-%E6%95%B0%E4%BA%BF%E9%9F%B3%E4%B9%90%E7%95%85%E5%90%AC/id590338362?uo=4",
+    "version": "9.5.85",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/99/a0/6a/99a06a86-d5e5-9d5b-16a2-19109827bcde/appIconNew-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/bd/02/e5/bd02e575-b320-393b-86f5-9dc4b463f83f/1-_U97f3_U4e50_U5361_U7247.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/31/85/f7/3185f7be-64de-54e0-da10-0116f9fa7d81/2-_U5149_U5f71_U6a21_U5f0f.png/392x696bb.png"
+    ]
+  },
+  {
+    "app": "taxi",
+    "name": "滴滴-打车骑车顺风车火车票租车代驾送货",
+    "page": "https://apps.apple.com/cn/app/%E6%BB%B4%E6%BB%B4-%E6%89%93%E8%BD%A6%E9%AA%91%E8%BD%A6%E9%A1%BA%E9%A3%8E%E8%BD%A6%E7%81%AB%E8%BD%A6%E7%A5%A8%E7%A7%9F%E8%BD%A6%E4%BB%A3%E9%A9%BE%E9%80%81%E8%B4%A7/id554499054?uo=4",
+    "version": "8.0.12",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/3f/3a/7e/3f3a7e14-d688-65b7-8d91-f65d1f8e1e94/AppIcon_default-0-0-1x_U007ephone-0-1-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/65/52/32/65523260-5ba9-0658-edec-6a5273c80b44/ios-P1.png/320x480bb.jpg",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/f9/19/ea/f919ea66-f2e3-f056-ab3d-85894034887f/ios-P2_U4ee3_U8a00_U4eba_U7248-1242_2688.png/320x480bb.jpg"
+    ]
+  },
+  {
+    "app": "travel",
+    "name": "携程旅行-订酒店机票火车票",
+    "page": "https://apps.apple.com/cn/app/%E6%90%BA%E7%A8%8B%E6%97%85%E8%A1%8C-%E8%AE%A2%E9%85%92%E5%BA%97%E6%9C%BA%E7%A5%A8%E7%81%AB%E8%BD%A6%E7%A5%A8/id379395415?uo=4",
+    "version": "8.96.0",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/1d/a7/7b/1da77b98-4285-c1be-6692-5f60440af422/AppIcon-0-0-1x_U007emarketing-0-5-0-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/0a/4b/bd/0a4bbd09-5850-8694-cb2e-e577f05727b1/17820206-ad02-4bd6-b025-585405405da1_12_1242_Uff08_U5bbd_Uff09x2208_Uff08_U9ad8_Uff09.jpg/392x696bb.jpg",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/cf/87/19/cf871967-4d51-7f1e-a615-b687a8a77a53/89816893-14bc-4528-8138-526e6feed03a_1.jpg/392x696bb.jpg"
+    ]
+  },
+  {
+    "app": "bank",
+    "name": "招商银行",
+    "page": "https://apps.apple.com/cn/app/%E6%8B%9B%E5%95%86%E9%93%B6%E8%A1%8C/id392899425?uo=4",
+    "version": "14.4.0",
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/86/ac/a0/86aca000-2f95-cedd-b1e8-f7eda1697143/AppIcon26-0-0-1x_U007epad-0-1-0-0-sRGB-85-220.png/512x512bb.jpg",
+    "screens": [
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/23/a2/17/23a217a7-e6e2-2812-5324-097b4da27717/_U5b58-1242x2208.png/392x696bb.png",
+      "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/d1/8e/29/d18e2905-e5dd-6317-7fad-86b1ea4a8c6e/_U8d37-1242x2208.png/392x696bb.png"
+    ]
+  },
+  {
+    "photo": "food",
+    "url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "coffee",
+    "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "dessert",
+    "url": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "headphones",
+    "url": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "shoes",
+    "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "camera",
+    "url": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "hotel",
+    "url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "city",
+    "url": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=700&q=82"
+  },
+  {
+    "photo": "sea",
+    "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=82"
+  }
+]

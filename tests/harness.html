@@ -34,6 +34,9 @@
     window.SillyTavern = { getContext: () => ctx };
     window.harness={ctx,chatRows,variables,eventHandlers,calls:[]};
     window.TavernHelper = {
+      getPresetNames(){return ['测试写作预设'];},
+      getPreset(){return {prompts:[{id:'style',name:'文风',enabled:true,content:'PRESET_SENTINEL 清晰动作与对白。'}]};},
+      getGlobalWorldbookNames(){return [];},
       getChatMessages() { return chatRows; },
       getVariables({ message_id }) { return variables[message_id] || {}; },
       async updateVariablesWith(fn, { message_id }) { variables[message_id] = fn(variables[message_id] || {}); },
@@ -48,6 +51,7 @@
     window.fetch = async (url, options = {}) => {
       if(String(url).includes('/api/plugins/writer-ai-relay-server')) {
         const route=String(url).split('/writer-ai-relay-server')[1];
+        (window.relayCalls||=[]).push({route,input:options.body?JSON.parse(options.body):null});
         const body={ok:true,config:mockConfig,models:['relay-model-a','relay-model-b'],content:route==='/generate'?'我端起碗，认真地看向桌上的下一道菜。':'连接成功'};
         return new Response(JSON.stringify(body),{headers:{'Content-Type':'application/json'}});
       }

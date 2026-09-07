@@ -48,23 +48,34 @@ export function defaultBackstageState() {
     world: [],
     updatedAt: 0,
     sourceFloor: null,
+    sceneEmpty: false,
   };
 }
 
 export function normalizeBackstageState(input) {
   const base = defaultBackstageState();
   const source = input && typeof input === 'object' ? input : {};
-  const timeline = source.timeline && typeof source.timeline === 'object' ? source.timeline : {};
-  const cleanRows = (key, limit = 40) => Array.isArray(source[key])
-    ? source[key].filter(row => row && typeof row === 'object').map(row => clone(row))
-    : [];
+  const timeline = source.timeline || source.时间地点 || {};
+  const aliases={present:['现场人物','在场人物'],clothing:['衣着状态','穿着'],promises:['约定与待办','约定'],secrets:['秘密与伏笔'],offscreen:['幕后人物'],world:['世界事件']};
+  const cleanRows = key => {
+    const value=source[key]??aliases[key]?.map(k=>source[k]).find(v=>v!==undefined);
+    const list=Array.isArray(value)?value:value&&typeof value==='object'?Object.entries(value).map(([name,row])=>typeof row==='object'?{name,...row}:{name,content:String(row)}):[];
+    const fields={name:['姓名','人物'],action:['动作','行为'],mood:['心情','情绪'],location:['位置','地点'],outfit:['衣着','服装'],person:['对象','相关人物'],subject:['事项'],content:['内容'],knownBy:['知情者'],title:['标题'],detail:['详情'],activity:['活动'],goal:['目标'],time:['时间'],place:['地点'],status:['状态']};
+    return list.filter(Boolean).map(row=>{
+      if(typeof row==='string')return ['secrets','world'].includes(key)?{[key==='world'?'title':'content']:row}:{name:row};
+      const result=clone(row);
+      for(const [field,keys] of Object.entries(fields))if(result[field]===undefined){const alias=keys.find(k=>row[k]!==undefined);if(alias)result[field]=row[alias];}
+      if(typeof result.knownBy==='string')result.knownBy=result.knownBy.split(/[、,，]/).map(n=>n.trim()).filter(Boolean);
+      return result;
+    });
+  };
   return {
     ...base,
     timeline: {
-      date: text(timeline.date, 80),
-      time: text(timeline.time, 80),
-      location: text(timeline.location, 160),
-      weather: text(timeline.weather, 120),
+      date: text(timeline.date||timeline.日期, 80),
+      time: text(timeline.time||timeline.时间, 80),
+      location: text(timeline.location||timeline.地点, 160),
+      weather: text(timeline.weather||timeline.天气, 120),
     },
     present: cleanRows('present', 30),
     clothing: cleanRows('clothing', 30),
@@ -74,6 +85,7 @@ export function normalizeBackstageState(input) {
     world: cleanRows('world', 40),
     updatedAt: Number(source.updatedAt) || 0,
     sourceFloor: source.sourceFloor ?? null,
+    sceneEmpty: source.sceneEmpty === true,
   };
 }
 

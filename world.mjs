@@ -44,10 +44,33 @@ export function mergePeople(phone, people, userName) {
   let state = ensureWorld(normalizePhoneState(phone));
   for (const person of people || []) {
     if (!validPerson(person.name) || person.name === userName || !person.evidence) continue;
-    const existing = state.world.people.find(p => p.name === person.name || (p.aliases || []).includes(person.name));
-    const row = { ...existing, ...person, name: clean(person.name, 80) };
+    const aliases=[...new Set([person.name,...(Array.isArray(person.aliases)?person.aliases:[])])].filter(n=>typeof n==='string'&&n!==userName&&n.length<60);
+    const matchingPeople=state.world.people.filter(p => [p.name,...(p.aliases||[])].some(n=>aliases.includes(n)));
+    const existing = matchingPeople[0];
+    const row = { ...existing, ...person, name: clean(person.name, 80), aliases:[...new Set([...aliases,...matchingPeople.flatMap(p=>[p.name,...(p.aliases||[])])].filter(n=>n&&n!==person.name))] };
     if (existing) Object.assign(existing, row); else state.world.people.push(row);
-    if (person.known === true || person.relationToUser) state = mergeContacts(state, [row], { excludeNames: [userName] });
+    state.world.people=state.world.people.filter(p=>p===existing||!matchingPeople.includes(p));
+    if (person.known === true || person.relationToUser) {
+      state = mergeContacts(state, [row], { excludeNames: [userName] });
+      const matches=Object.values(state.contacts).filter(c=>[row.name,...row.aliases].some(n=>[c.name,...(c.aliases||[])].includes(n)));
+      const keep=matches.find(c=>c.id==='main')||matches[0];
+      if(keep){
+        const oldNames=[...new Set(matches.flatMap(c=>[c.name,...(c.aliases||[])]).concat(row.aliases))];
+        keep.name=row.name;keep.aliases=oldNames.filter(n=>n!==row.name);keep.archived=false;keep.source=person.source||'世界书/正文证据';
+        state.threads[keep.id].name=row.name;
+        for(const other of matches.filter(c=>c.id!==keep.id)){
+          const thread=state.threads[other.id];
+          state.threads[keep.id].messages=[...new Map([...state.threads[keep.id].messages,...(thread?.messages||[])].map(m=>[m.id,m])).values()].sort((a,b)=>a.time-b.time);
+          state.threads[keep.id].unread+=Number(thread?.unread||0);
+          for(const p of state.world.packets)if(p.targetId===other.id&&p.channel!=='group')p.targetId=keep.id;
+          delete state.contacts[other.id];delete state.threads[other.id];
+        }
+        const canon=n=>oldNames.includes(n)?row.name:n;
+        for(const g of Object.values(state.groups))g.members=[...new Set(g.members.map(canon))];
+        for(const r of state.world.journal)r.knownBy=[...new Set((r.knownBy||[]).map(canon))];
+        for(const r of state.world.knowledge)r.knownBy=[...new Set((r.knownBy||[]).map(canon))];
+      }
+    }
   }
   return state;
 }
