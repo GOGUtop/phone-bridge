@@ -1291,7 +1291,7 @@ import {
     bridgeToAnima('startup');
     syncContactRoster().then(() => { render(); renderBackstage(); }).catch(() => {});
     scheduleAnimaCardAdaptation(1100);
-    console.info('[Anima Phone Bridge] v0.3.3 ready');
+    console.info('[Anima Phone Bridge] v0.3.4 ready');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });

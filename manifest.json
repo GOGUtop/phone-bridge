@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "anima_phone_bridge",
   "display_name": "Anima 小手机桥",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "双 API 小手机与 Anima 双向桥：互动、正文实时校准、自动备用、世界书联系人和幕后七条。",
   "author": "Anima Phone Bridge contributors",
   "loading_order": 110,

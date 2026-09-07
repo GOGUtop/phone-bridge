@@ -87,7 +87,7 @@ test('backstage normalization always keeps all seven sections', () => {
   for (const key of ['clothing', 'promises', 'secrets', 'offscreen', 'world']) assert.deepEqual(backstage[key], []);
 });
 
-test('Anima card adaptation preserves existing rules and appends a final guard', () => {
+test('Anima card adaptation preserves existing rules when no format guard exists', () => {
   const existing = [
     { role: 'system', title: '原有规则', content: '必须保留' },
     { role: 'user', title: '增量剧情', content: '{{chat_context}}' },
@@ -98,6 +98,25 @@ test('Anima card adaptation preserves existing rules and appends a final guard',
   assert.equal(result.rules[0].content, '必须保留');
   assert.equal(result.rules[1].content, '{{chat_context}}');
   assert.equal(result.rules[2].title, ANIMA_PROMPT_RULE_TITLE);
+});
+
+test('Anima card adaptation stays before response format and emphasis guards', () => {
+  const existing = [
+    { role: 'system', title: '背景规则', content: '保留' },
+    { role: 'system', title: '🧩状态更新提示词', content: '<response_format>格式</response_format>' },
+    { role: 'system', title: '🧠强调', content: '最后强调' },
+    { role: 'system', title: ANIMA_PROMPT_RULE_TITLE, content: `${ANIMA_PROMPT_RULE_MARKER}\n旧版` },
+  ];
+  const moved = mergeAnimaPromptRule(existing, `${ANIMA_PROMPT_RULE_MARKER}\n新版`);
+  const repeated = mergeAnimaPromptRule(moved.rules, `${ANIMA_PROMPT_RULE_MARKER}\n新版`);
+  assert.deepEqual(moved.rules.map(row => row.title), [
+    '背景规则',
+    ANIMA_PROMPT_RULE_TITLE,
+    '🧩状态更新提示词',
+    '🧠强调',
+  ]);
+  assert.equal(moved.changed, true);
+  assert.equal(repeated.changed, false);
 });
 
 test('Anima card adaptation updates its own rule without duplication', () => {

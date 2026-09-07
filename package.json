@@ -1,6 +1,6 @@
 {
   "name": "anima-phone-bridge",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "type": "module",
   "description": "SillyTavern virtual phone with an Anima memory bridge",

@@ -19,17 +19,22 @@ export function mergeAnimaPromptRule(rules, content) {
   const value = text(content, 30000);
   if (!value) return { changed: false, ready: true, rules: clone(rules) };
   const next = clone(rules);
-  const index = next.findIndex(row => row?.title === ANIMA_PROMPT_RULE_TITLE || String(row?.content || '').includes(ANIMA_PROMPT_RULE_MARKER));
-  const bridgeRule = { role: 'system', title: ANIMA_PROMPT_RULE_TITLE, content: value, enabled: true };
-  if (index < 0) {
-    next.push(bridgeRule);
-    return { changed: true, ready: true, rules: next };
-  }
-  const existing = next[index] || {};
-  const updated = { ...existing, ...bridgeRule };
-  if (JSON.stringify(existing) === JSON.stringify(updated)) return { changed: false, ready: true, rules: next };
-  next[index] = updated;
-  return { changed: true, ready: true, rules: next };
+  const isBridgeRule = row => row?.title === ANIMA_PROMPT_RULE_TITLE
+    || String(row?.content || '').includes(ANIMA_PROMPT_RULE_MARKER);
+  const existing = next.find(isBridgeRule) || {};
+  const arranged = next.filter(row => !isBridgeRule(row));
+  const bridgeRule = { ...existing, role: 'system', title: ANIMA_PROMPT_RULE_TITLE, content: value, enabled: true };
+  const formatIndex = arranged.findIndex(row => {
+    const title = String(row?.title || '');
+    const body = String(row?.content || '');
+    return /状态更新提示词|输出格式|强调/i.test(title) || /<response_format>/i.test(body);
+  });
+  arranged.splice(formatIndex < 0 ? arranged.length : formatIndex, 0, bridgeRule);
+  return {
+    changed: JSON.stringify(next) !== JSON.stringify(arranged),
+    ready: true,
+    rules: arranged,
+  };
 }
 
 export function defaultBackstageState() {

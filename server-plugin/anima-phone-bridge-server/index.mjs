@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PLUGIN_ID = 'anima-phone-bridge-server';
-const VERSION = '0.3.3';
+const VERSION = '0.3.4';
 const DATA_ROOT = path.resolve(globalThis.DATA_ROOT || path.join(process.cwd(), 'data'));
 const ROOT_DIR = path.basename(DATA_ROOT) === 'default-user'
   ? path.join(DATA_ROOT, 'anima-phone-bridge')
