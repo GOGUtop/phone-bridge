@@ -2,32 +2,61 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PLUGIN_ID = 'anima-phone-bridge-server';
-const VERSION = '0.1.0';
+const VERSION = '0.3.1';
 const DATA_ROOT = path.resolve(globalThis.DATA_ROOT || path.join(process.cwd(), 'data'));
 const ROOT_DIR = path.basename(DATA_ROOT) === 'default-user'
   ? path.join(DATA_ROOT, 'anima-phone-bridge')
   : path.join(DATA_ROOT, 'default-user', 'anima-phone-bridge');
 const CONFIG_FILE = path.join(ROOT_DIR, 'config.json');
 
-const defaultConfig = () => ({
-  baseUrl: '',
-  apiKey: '',
-  model: '',
-  temperature: 0.7,
-  maxTokens: 1200,
-  timeoutSeconds: 120,
+const defaultEndpoint = () => ({
+  baseUrl: '', apiKey: '', model: '', temperature: 0.7, maxTokens: 1200, timeoutSeconds: 120,
 });
+const defaultConfig = () => ({
+  version: 2, send: defaultEndpoint(), update: defaultEndpoint(), updateFallbackSeconds: 60,
+});
+const updateHealth = {
+  mode: 'update', failures: 0, lastError: '', degradedUntil: 0, lastSuccessAt: 0, lastProvider: '',
+};
 
-function ensureDir() {
-  fs.mkdirSync(ROOT_DIR, { recursive: true });
+function ensureDir() { fs.mkdirSync(ROOT_DIR, { recursive: true }); }
+
+function cleanEndpoint(input, previous = defaultEndpoint()) {
+  return {
+    baseUrl: String(input?.baseUrl ?? previous.baseUrl).trim().slice(0, 1000),
+    apiKey: String(input?.apiKey || previous.apiKey || '').trim().slice(0, 4000),
+    model: String(input?.model ?? previous.model).trim().slice(0, 300),
+    temperature: Math.max(0, Math.min(2, Number(input?.temperature ?? previous.temperature) || 0.7)),
+    maxTokens: Math.max(128, Math.min(16000, Number(input?.maxTokens ?? previous.maxTokens) || 1200)),
+    timeoutSeconds: Math.max(10, Math.min(300, Number(input?.timeoutSeconds ?? previous.timeoutSeconds) || 120)),
+  };
+}
+
+function migrateConfig(input) {
+  const source = input && typeof input === 'object' ? input : {};
+  const legacy = source.baseUrl || source.apiKey || source.model ? source : null;
+  const base = defaultConfig();
+  return {
+    version: 2,
+    send: cleanEndpoint(source.send || legacy || {}, base.send),
+    update: cleanEndpoint(source.update || {}, base.update),
+    updateFallbackSeconds: Math.max(15, Math.min(900, Number(source.updateFallbackSeconds) || 60)),
+  };
 }
 
 function loadConfig() {
-  try {
-    return { ...defaultConfig(), ...JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')) };
-  } catch {
-    return defaultConfig();
-  }
+  try { return migrateConfig(JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'))); }
+  catch { return defaultConfig(); }
+}
+
+function cleanConfig(input, previous = defaultConfig()) {
+  const source = input && typeof input === 'object' ? input : {};
+  return {
+    version: 2,
+    send: cleanEndpoint(source.send || {}, previous.send),
+    update: cleanEndpoint(source.update || {}, previous.update),
+    updateFallbackSeconds: Math.max(15, Math.min(900, Number(source.updateFallbackSeconds ?? previous.updateFallbackSeconds) || 60)),
+  };
 }
 
 function saveConfig(config) {
@@ -37,59 +66,85 @@ function saveConfig(config) {
   fs.renameSync(temp, CONFIG_FILE);
 }
 
+function endpointReady(config) { return Boolean(config?.baseUrl && config?.apiKey && config?.model); }
+function publicEndpoint(config) { return { ...config, apiKey: '', hasApiKey: Boolean(config.apiKey) }; }
+
+function publicHealth(config) {
+  const updateConfigured = endpointReady(config.update);
+  if (!updateConfigured) return { ...updateHealth, mode: 'shared', updateConfigured: false, degradedUntil: 0 };
+  if (Date.now() >= updateHealth.degradedUntil && updateHealth.mode === 'fallback') {
+    return { ...updateHealth, mode: 'checking', updateConfigured: true };
+  }
+  return { ...updateHealth, updateConfigured: true };
+}
+
 function publicConfig(config) {
   return {
-    ...config,
-    apiKey: '',
-    hasApiKey: Boolean(config.apiKey),
+    version: config.version,
+    send: publicEndpoint(config.send),
+    update: publicEndpoint(config.update),
+    updateFallbackSeconds: config.updateFallbackSeconds,
+    health: publicHealth(config),
   };
 }
 
-function endpoint(baseUrl) {
+function chatEndpoint(baseUrl) {
   const value = String(baseUrl || '').trim().replace(/\/+$/, '');
   if (!value) throw new Error('请先填写 API 地址');
   if (/\/chat\/completions$/i.test(value)) return value;
+  if (/\/models$/i.test(value)) return value.replace(/\/models$/i, '/chat/completions');
   return `${value}/chat/completions`;
 }
 
-function cleanConfig(input, previous = defaultConfig()) {
-  const next = {
-    baseUrl: String(input?.baseUrl ?? previous.baseUrl).trim().slice(0, 1000),
-    apiKey: String(input?.apiKey || previous.apiKey || '').trim().slice(0, 4000),
-    model: String(input?.model ?? previous.model).trim().slice(0, 300),
-    temperature: Math.max(0, Math.min(2, Number(input?.temperature ?? previous.temperature) || 0.7)),
-    maxTokens: Math.max(128, Math.min(8000, Number(input?.maxTokens ?? previous.maxTokens) || 1200)),
-    timeoutSeconds: Math.max(10, Math.min(300, Number(input?.timeoutSeconds ?? previous.timeoutSeconds) || 120)),
-  };
-  return next;
+export function modelsEndpoint(baseUrl) {
+  const value = String(baseUrl || '').trim().replace(/\/+$/, '');
+  if (!value) throw new Error('请先填写 API 地址');
+  if (/\/models$/i.test(value)) return value;
+  if (/\/chat\/completions$/i.test(value)) return value.replace(/\/chat\/completions$/i, '/models');
+  return `${value}/models`;
+}
+
+export function extractModelIds(body) {
+  const rows = Array.isArray(body?.data) ? body.data
+    : Array.isArray(body?.models) ? body.models
+      : Array.isArray(body) ? body : [];
+  return [...new Set(rows
+    .map(row => typeof row === 'string' ? row : row?.id ?? row?.name)
+    .map(value => String(value || '').trim()).filter(Boolean))]
+    .sort((left, right) => left.localeCompare(right, 'zh-CN'));
+}
+
+async function responseBody(response) {
+  const raw = await response.text();
+  try { return raw ? JSON.parse(raw) : {}; } catch { return { raw }; }
 }
 
 async function callModel(config, messages, signal) {
   if (!config.model) throw new Error('请先填写模型名称');
   if (!config.apiKey) throw new Error('请先填写 API Key');
-  const response = await fetch(endpoint(config.baseUrl), {
+  const response = await fetch(chatEndpoint(config.baseUrl), {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      messages,
-      temperature: config.temperature,
-      max_tokens: config.maxTokens,
-    }),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.apiKey}` },
+    body: JSON.stringify({ model: config.model, messages, temperature: config.temperature, max_tokens: config.maxTokens }),
     signal,
   });
-  const raw = await response.text();
-  let body;
-  try { body = raw ? JSON.parse(raw) : {}; } catch { body = { raw }; }
-  if (!response.ok) {
-    throw new Error(body?.error?.message || body?.message || `模型请求失败：HTTP ${response.status}`);
-  }
+  const body = await responseBody(response);
+  if (!response.ok) throw new Error(body?.error?.message || body?.message || `模型请求失败：HTTP ${response.status}`);
   const content = body?.choices?.[0]?.message?.content;
   if (!content) throw new Error('模型返回了空内容');
   return { content: String(content), model: body?.model || config.model };
+}
+
+async function listModels(config, signal) {
+  if (!config.apiKey) throw new Error('请先填写 API Key');
+  const response = await fetch(modelsEndpoint(config.baseUrl), {
+    method: 'GET', headers: { Accept: 'application/json', Authorization: `Bearer ${config.apiKey}` }, signal,
+  });
+  const body = await responseBody(response);
+  if (!response.ok) throw new Error(body?.error?.message || body?.message || `拉取模型失败：HTTP ${response.status}`);
+  const models = extractModelIds(body);
+  if (!models.length) throw new Error('接口没有返回可用模型，可继续手动填写模型名称');
+  return models;
 }
 
 async function withTimeout(config, task) {
@@ -102,58 +157,109 @@ async function withTimeout(config, task) {
   } finally { clearTimeout(timer); }
 }
 
+function safeMessages(input) {
+  const messages = Array.isArray(input) ? input : [];
+  if (!messages.length || messages.length > 80) throw new Error('无效的手机对话上下文');
+  return messages.map(row => ({
+    role: ['system', 'user', 'assistant'].includes(row?.role) ? row.role : 'user',
+    content: String(row?.content || '').slice(0, 40000),
+  }));
+}
+
+async function callSlot(config, slot, messages) {
+  const selected = slot === 'update' ? config.update : config.send;
+  if (!endpointReady(selected)) throw new Error(`${slot === 'update' ? '实时更新' : '发送'} API 尚未完整配置`);
+  return withTimeout(selected, signal => callModel(selected, messages, signal));
+}
+
+export async function reconcileWithFallback(config, messages) {
+  const updateConfigured = endpointReady(config.update);
+  if (updateConfigured && Date.now() >= updateHealth.degradedUntil) {
+    try {
+      const result = await callSlot(config, 'update', messages);
+      Object.assign(updateHealth, {
+        mode: 'update', failures: 0, lastError: '', degradedUntil: 0,
+        lastSuccessAt: Date.now(), lastProvider: 'update',
+      });
+      return { ...result, provider: 'update', degraded: false, health: publicHealth(config) };
+    } catch (error) {
+      Object.assign(updateHealth, {
+        mode: 'fallback', failures: updateHealth.failures + 1,
+        lastError: String(error?.message || error).slice(0, 500),
+        degradedUntil: Date.now() + config.updateFallbackSeconds * 1000,
+        lastProvider: 'send',
+      });
+    }
+  }
+  try {
+    const result = await callSlot(config, 'send', messages);
+    updateHealth.lastProvider = 'send';
+    return { ...result, provider: 'send', degraded: updateConfigured, health: publicHealth(config) };
+  } catch (fallbackError) {
+    const prefix = updateHealth.lastError ? `实时更新 API 失败：${updateHealth.lastError}；` : '';
+    throw new Error(`${prefix}备用发送 API 失败：${fallbackError.message}`);
+  }
+}
+
 export async function init(router) {
   ensureDir();
-  router.get('/health', (_req, res) => res.json({ ok: true, version: VERSION }));
-
-  router.get('/config', (_req, res) => {
-    res.json({ ok: true, config: publicConfig(loadConfig()) });
+  router.get('/health', (_req, res) => {
+    const config = loadConfig();
+    res.json({ ok: true, version: VERSION, health: publicHealth(config) });
   });
-
+  router.get('/config', (_req, res) => res.json({ ok: true, config: publicConfig(loadConfig()) }));
   router.post('/config', (req, res) => {
     try {
-      const config = cleanConfig(req.body || {}, loadConfig());
+      const previous = loadConfig();
+      const config = cleanConfig(req.body || {}, previous);
+      const updateChanged = JSON.stringify({ ...previous.update, apiKey: Boolean(previous.update.apiKey) })
+        !== JSON.stringify({ ...config.update, apiKey: Boolean(config.update.apiKey) });
       saveConfig(config);
+      if (updateChanged) Object.assign(updateHealth, { mode: 'update', failures: 0, lastError: '', degradedUntil: 0 });
       res.json({ ok: true, config: publicConfig(config) });
-    } catch (error) {
-      res.status(400).json({ ok: false, error: String(error?.message || error) });
-    }
+    } catch (error) { res.status(400).json({ ok: false, error: String(error?.message || error) }); }
   });
-
-  router.post('/test', async (_req, res) => {
+  router.post('/models', async (req, res) => {
     try {
       const config = loadConfig();
-      const result = await withTimeout(config, signal => callModel(config, [
+      const slot = req.body?.slot === 'update' ? 'update' : 'send';
+      const selected = config[slot];
+      const models = await withTimeout(selected, signal => listModels(selected, signal));
+      res.json({ ok: true, slot, models });
+    } catch (error) { res.status(400).json({ ok: false, error: String(error?.message || error) }); }
+  });
+  router.post('/test', async (req, res) => {
+    try {
+      const config = loadConfig();
+      const slot = req.body?.slot === 'update' ? 'update' : 'send';
+      const result = await callSlot(config, slot, [
         { role: 'system', content: '你是虚构故事中的手机助手。只输出合法 JSON 对象。' },
         { role: 'user', content: '只输出 {"reply":"连接成功"}' },
-      ], signal));
-      res.json({ ok: true, ...result });
-    } catch (error) {
-      res.status(400).json({ ok: false, error: String(error?.message || error) });
-    }
+      ]);
+      res.json({ ok: true, slot, ...result });
+    } catch (error) { res.status(400).json({ ok: false, error: String(error?.message || error) }); }
   });
-
   router.post('/generate', async (req, res) => {
     try {
       const config = loadConfig();
-      const messages = Array.isArray(req.body?.messages) ? req.body.messages : [];
-      if (!messages.length || messages.length > 60) throw new Error('无效的手机对话上下文');
-      const safeMessages = messages.map(row => ({
-        role: ['system', 'user', 'assistant'].includes(row?.role) ? row.role : 'user',
-        content: String(row?.content || '').slice(0, 30000),
-      }));
-      const result = await withTimeout(config, signal => callModel(config, safeMessages, signal));
+      const result = await callSlot(config, 'send', safeMessages(req.body?.messages));
+      res.json({ ok: true, provider: 'send', ...result });
+    } catch (error) { res.status(400).json({ ok: false, error: String(error?.message || error) }); }
+  });
+  router.post('/reconcile', async (req, res) => {
+    const config = loadConfig();
+    try {
+      const result = await reconcileWithFallback(config, safeMessages(req.body?.messages));
       res.json({ ok: true, ...result });
     } catch (error) {
-      res.status(400).json({ ok: false, error: String(error?.message || error) });
+      res.status(400).json({ ok: false, error: String(error?.message || error), health: publicHealth(config) });
     }
   });
-
   console.log(`[${PLUGIN_ID}] v${VERSION} loaded`);
 }
 
 export const info = {
   id: PLUGIN_ID,
   name: 'Anima 小手机桥服务端',
-  description: '保存统一手机 API 配置，并代理 OpenAI 兼容的手机 Agent 请求。',
+  description: '保存发送与实时更新 API，提供模型拉取、故障切换和双向剧情同步。',
 };

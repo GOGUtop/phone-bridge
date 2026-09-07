@@ -18,9 +18,10 @@
     const eventHandlers = {};
     const ctx = {
       chatId: 'ui-harness', characterId: 0, name1: '阿遥', name2: '林澈',
-      characters: [{ name: '林澈', avatar: 'lin.png', description: '冷静但很守时。', personality: '克制、认真', scenario: '两人生活在现代城市。' }],
+      characters: [{ name: '林澈', avatar: 'lin.png', description: '冷静但很守时。', personality: '克制、认真', scenario: '两人生活在现代城市。', data: { extensions: { anima_prompt_config: [{ role: 'system', title: '状态占位符', content: '{{status}}' }, { role: 'user', title: '增量剧情', content: '{{chat_context}}' }] } } }],
       extensionSettings: {}, chatMetadata: {},
       saveSettingsDebounced() {}, getRequestHeaders() { return {}; },
+      async writeExtensionField(characterId, key, value) { this.characters[characterId].data.extensions[key] = value; },
       eventSource: { on(name, fn) { (eventHandlers[name] ||= []).push(fn); }, emit() {} },
     };
     window.SillyTavern = { getContext: () => ctx };
@@ -31,6 +32,47 @@
       async setChatMessages() {},
     };
     window.toastr = { info() {}, success() {}, warning() {}, error: console.error };
+    const endpoint = { baseUrl: 'https://example.com/v1', apiKey: '', model: 'test-model', temperature: 0.7, maxTokens: 1200, hasApiKey: true };
+    let mockConfig = { version: 2, send: { ...endpoint }, update: { ...endpoint }, updateFallbackSeconds: 60, health: { mode: 'update', updateConfigured: true } };
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = async (url, options = {}) => {
+      if (!String(url).includes('/api/plugins/anima-phone-bridge-server')) return nativeFetch(url, options);
+      const route = String(url).split('/anima-phone-bridge-server')[1];
+      let body = { ok: true };
+      if (route === '/config' && options.method === 'POST') {
+        const input = JSON.parse(options.body || '{}');
+        mockConfig = {
+          ...mockConfig,
+          ...input,
+          send: { ...mockConfig.send, ...input.send, apiKey: '', hasApiKey: Boolean(input.send?.apiKey || mockConfig.send.hasApiKey) },
+          update: { ...mockConfig.update, ...input.update, apiKey: '', hasApiKey: Boolean(input.update?.apiKey || mockConfig.update.hasApiKey) },
+        };
+        body.config = mockConfig;
+      } else if (route === '/config') {
+        body.config = mockConfig;
+      } else if (route === '/models') {
+        body.models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gpt-4.1-mini'];
+      } else if (route === '/test') {
+        body.content = '{"reply":"连接成功"}';
+      } else if (route === '/reconcile') {
+        body = {
+          ok: true,
+          provider: 'update',
+          health: { mode: 'update', updateConfigured: true },
+          content: JSON.stringify({
+            contacts: [{ name: '周宁', subtitle: '世界书朋友' }],
+            orderUpdates: [], commitmentUpdates: [], incomingMessages: [], walletChanges: [], moments: [],
+            backstage: {
+              timeline: { date: '2026/09/07', time: '16:45', location: '桥下咖啡', weather: '晴' },
+              present: [{ name: '林澈', action: '在门口等候', mood: '平静' }],
+              clothing: [{ name: '林澈', outfit: '黑色薄外套' }],
+              promises: [], secrets: [], offscreen: [{ name: '周宁', location: '公司', activity: '收尾工作', goal: '下班' }], world: [],
+            },
+          }),
+        };
+      }
+      return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    };
   </script>
   <script type="module" src="../index.js"></script>
 </body>
